@@ -42,6 +42,7 @@ function StarRating({ rating }) {
 }
 
 function ProductCard({ product, index }) {
+  const navigate = useNavigate();
   const [wished, setWished] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
@@ -52,15 +53,17 @@ function ProductCard({ product, index }) {
   };
 
   return (
-    <div style={{
-      background: "#141414",
-      border: "1px solid #222",
-      borderRadius: 16,
-      overflow: "hidden",
-      cursor: "pointer",
-      transition: "transform 0.3s, box-shadow 0.3s, border-color 0.3s",
-      animation: `fadeUp 0.5s ease ${index * 0.08}s both`,
-    }}
+    <div
+      onClick={() => navigate(`/products/${product.id}`)}
+      style={{
+        background: "#141414",
+        border: "1px solid #222",
+        borderRadius: 16,
+        overflow: "hidden",
+        cursor: "pointer",
+        transition: "transform 0.3s, box-shadow 0.3s, border-color 0.3s",
+        animation: `fadeUp 0.5s ease ${index * 0.08}s both`,
+      }}
       onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,0.5)"; e.currentTarget.style.borderColor = "#f59e0b44"; }}
       onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = "#222"; }}
     >
@@ -287,10 +290,14 @@ export default function HomePage() {
             <h1 style={{ fontSize: 62, fontWeight: 800, color: "#fff", lineHeight: 1.1, marginBottom: 16, whiteSpace: "pre-line" }}>{slide.title}</h1>
             <p style={{ fontSize: 17, color: "#d1d5db", maxWidth: 420, lineHeight: 1.6, marginBottom: 32 }}>{slide.subtitle}</p>
             <div style={{ display: "flex", gap: 12 }}>
-              <button style={{ background: slide.accent, color: "#000", border: "none", borderRadius: 14, padding: "14px 32px", fontSize: 15, fontWeight: 800, cursor: "pointer", letterSpacing: 0.3 }}>
+              <button
+                onClick={() => navigate('/products')}
+                style={{ background: slide.accent, color: "#000", border: "none", borderRadius: 14, padding: "14px 32px", fontSize: 15, fontWeight: 800, cursor: "pointer", letterSpacing: 0.3 }}>
                 {slide.cta} →
               </button>
-              <button style={{ background: "transparent", color: "#fff", border: "1px solid #ffffff44", borderRadius: 14, padding: "14px 24px", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+              <button
+                onClick={() => navigate('/products')}
+                style={{ background: "transparent", color: "#fff", border: "1px solid #ffffff44", borderRadius: 14, padding: "14px 24px", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
                 View Deals
               </button>
             </div>
@@ -322,15 +329,17 @@ export default function HomePage() {
             <p style={{ fontSize: 12, color: "#f59e0b", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", fontFamily: "'Sora', sans-serif" }}>Browse</p>
             <h2 style={{ fontSize: 32, fontWeight: 800, color: "#fff", fontFamily: "'Sora', sans-serif" }}>Shop by Category</h2>
           </div>
-          <span style={{ color: "#f59e0b", fontSize: 14, cursor: "pointer", fontWeight: 600 }}>View all →</span>
+          <span onClick={() => navigate('/products')} style={{ color: "#f59e0b", fontSize: 14, cursor: "pointer", fontWeight: 600 }}>View all →</span>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 16 }}>
           {categories.map((cat, i) => (
-            <div key={cat.name} style={{
-              background: "#111", border: "1px solid #1f1f1f", borderRadius: 16, padding: "24px 16px",
-              textAlign: "center", cursor: "pointer", transition: "all 0.3s",
-              animation: `fadeUp 0.5s ease ${i * 0.07}s both`
-            }}
+            <div key={cat.name}
+              onClick={() => navigate(`/products?category=${cat.name}`)}
+              style={{
+                background: "#111", border: "1px solid #1f1f1f", borderRadius: 16, padding: "24px 16px",
+                textAlign: "center", cursor: "pointer", transition: "all 0.3s",
+                animation: `fadeUp 0.5s ease ${i * 0.07}s both`
+              }}
               onMouseEnter={e => { e.currentTarget.style.background = "#1a1a1a"; e.currentTarget.style.borderColor = cat.color + "66"; e.currentTarget.style.transform = "translateY(-4px)"; }}
               onMouseLeave={e => { e.currentTarget.style.background = "#111"; e.currentTarget.style.borderColor = "#1f1f1f"; e.currentTarget.style.transform = "translateY(0)"; }}
             >
@@ -408,20 +417,45 @@ export default function HomePage() {
               </div>
               <p style={{ fontSize: 13, color: "#6b7280", lineHeight: 1.7, maxWidth: 260 }}>Your one-stop destination for everything you need — delivered fast, priced right.</p>
             </div>
-            {[
-              { title: "Shop", links: ["All Products", "Deals", "New Arrivals", "Best Sellers"] },
-              { title: "Account", links: ["Sign In", "Register", "Orders", "Wishlist"] },
-              { title: "Help", links: ["FAQs", "Shipping", "Returns", "Contact Us"] },
-            ].map(col => (
-              <div key={col.title}>
-                <h4 style={{ fontSize: 13, fontWeight: 700, color: "#e5e7eb", marginBottom: 16, letterSpacing: 1, textTransform: "uppercase", fontFamily: "'Sora', sans-serif" }}>{col.title}</h4>
-                {col.links.map(l => (
-                  <div key={l} style={{ fontSize: 13, color: "#6b7280", marginBottom: 10, cursor: "pointer", transition: "color 0.2s" }}
-                    onMouseEnter={e => e.target.style.color = "#f59e0b"}
-                    onMouseLeave={e => e.target.style.color = "#6b7280"}>{l}</div>
-                ))}
-              </div>
-            ))}
+            {/* Shop column */}
+            <div>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: "#e5e7eb", marginBottom: 16, letterSpacing: 1, textTransform: "uppercase", fontFamily: "'Sora', sans-serif" }}>Shop</h4>
+              {["All Products", "Deals", "New Arrivals", "Best Sellers"].map(l => (
+                <div key={l}
+                  onClick={() => navigate('/products')}
+                  style={{ fontSize: 13, color: "#6b7280", marginBottom: 10, cursor: "pointer", transition: "color 0.2s" }}
+                  onMouseEnter={e => e.target.style.color = "#f59e0b"}
+                  onMouseLeave={e => e.target.style.color = "#6b7280"}>{l}</div>
+              ))}
+            </div>
+
+            {/* Account column */}
+            <div>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: "#e5e7eb", marginBottom: 16, letterSpacing: 1, textTransform: "uppercase", fontFamily: "'Sora', sans-serif" }}>Account</h4>
+              {[
+                { label: "Sign In",  path: "/login"    },
+                { label: "Register", path: "/login"    },
+                { label: "Orders",   path: "/orders"   },
+                { label: "Wishlist", path: "/wishlist" },
+              ].map(l => (
+                <div key={l.label}
+                  onClick={() => navigate(l.path)}
+                  style={{ fontSize: 13, color: "#6b7280", marginBottom: 10, cursor: "pointer", transition: "color 0.2s" }}
+                  onMouseEnter={e => e.target.style.color = "#f59e0b"}
+                  onMouseLeave={e => e.target.style.color = "#6b7280"}>{l.label}</div>
+              ))}
+            </div>
+
+            {/* Help column */}
+            <div>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: "#e5e7eb", marginBottom: 16, letterSpacing: 1, textTransform: "uppercase", fontFamily: "'Sora', sans-serif" }}>Help</h4>
+              {["FAQs", "Shipping", "Returns", "Contact Us"].map(l => (
+                <div key={l}
+                  style={{ fontSize: 13, color: "#6b7280", marginBottom: 10, cursor: "pointer", transition: "color 0.2s" }}
+                  onMouseEnter={e => e.target.style.color = "#f59e0b"}
+                  onMouseLeave={e => e.target.style.color = "#6b7280"}>{l}</div>
+              ))}
+            </div>
             <div>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: "#e5e7eb", marginBottom: 16, letterSpacing: 1, textTransform: "uppercase", fontFamily: "'Sora', sans-serif" }}>Newsletter</h4>
               <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 14, lineHeight: 1.6 }}>Get exclusive deals straight to your inbox.</p>
