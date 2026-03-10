@@ -150,7 +150,7 @@ function LoginForm({ onSwitch }) {
             if (error) throw error;
             showToast("Welcome back! 🎉", "success")
             setTimeout(() => navigate('/'), 1200)
-
+            
         } catch (err) {
             showToast(err.message || "Login failed.");
         } finally {

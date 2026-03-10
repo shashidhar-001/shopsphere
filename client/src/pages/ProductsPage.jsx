@@ -75,7 +75,9 @@ function ProductCard({ product, index }) {
 export default function ProductsPage() {
   const navigate = useNavigate();
   const [search, setSearch]         = useState("");
-  const [category, setCategory]     = useState("All");
+  const params = new URLSearchParams(window.location.search);
+  const initialCategory = params.get("category") || "All";
+  const [category, setCategory]     = useState(initialCategory);
   const [sort, setSort]             = useState("featured");
   const [priceRange, setPriceRange] = useState([0, 700]);
   const [minRating, setMinRating]   = useState(0);
