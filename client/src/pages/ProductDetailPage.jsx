@@ -155,10 +155,10 @@ export default function ProductDetailPage() {
 
             {/* Price */}
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
-              <span style={{ fontSize: 36, fontWeight: 800, color: "#f59e0b", fontFamily: "'Sora', sans-serif" }}>${product.price}</span>
+              <span style={{ fontSize: 36, fontWeight: 800, color: "#f59e0b", fontFamily: "'Sora', sans-serif" }}>₹{product.price}</span>
               <div>
-                <span style={{ fontSize: 16, color: "#374151", textDecoration: "line-through", display: "block" }}>${product.originalPrice}</span>
-                <span style={{ fontSize: 12, color: "#10b981", fontWeight: 700 }}>You save ${(product.originalPrice - product.price).toFixed(2)}</span>
+                <span style={{ fontSize: 16, color: "#374151", textDecoration: "line-through", display: "block" }}>₹{product.originalPrice}</span>
+                <span style={{ fontSize: 12, color: "#10b981", fontWeight: 700 }}>You save ₹{(product.originalPrice - product.price).toFixed(2)}</span>
               </div>
             </div>
 

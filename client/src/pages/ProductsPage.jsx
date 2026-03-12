@@ -60,8 +60,8 @@ function ProductCard({ product, index }) {
         <p style={{ fontSize: 11, color: "#4b5563", marginTop: 2, marginBottom: 8 }}>{product.reviews.toLocaleString()} reviews</p>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 17, color: "#f59e0b", fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>${product.price}</span>
-            <span style={{ fontSize: 12, color: "#374151", textDecoration: "line-through" }}>${product.originalPrice}</span>
+            <span style={{ fontSize: 17, color: "#f59e0b", fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>₹{product.price}</span>
+            <span style={{ fontSize: 12, color: "#374151", textDecoration: "line-through" }}>₹{product.originalPrice}</span>
           </div>
           <span style={{ fontSize: 11, color: product.stock < 10 ? "#ef4444" : "#10b981", fontWeight: 600 }}>
             {product.stock < 10 ? `Only ${product.stock} left!` : "In Stock"}
@@ -156,7 +156,7 @@ export default function ProductsPage() {
                 style={{ width: "100%", accentColor: "#f59e0b" }} />
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
                 <span style={{ fontSize: 12, color: "#6b7280" }}>$0</span>
-                <span style={{ fontSize: 12, color: "#f59e0b", fontWeight: 700 }}>${priceRange[1]}</span>
+                <span style={{ fontSize: 12, color: "#f59e0b", fontWeight: 700 }}>₹{priceRange[1]}</span>
               </div>
             </div>
 
