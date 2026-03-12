@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
 import { PRODUCTS } from "../data/products";
 
 const STYLES = `
@@ -19,18 +20,18 @@ const STYLES = `
 `;
 
 const DUMMY_REVIEWS = [
-  { id: 1, name: "Alex M.",    rating: 5, date: "Jan 12, 2025", comment: "Absolutely love this product! Exceeded all my expectations. Build quality is top notch and it works exactly as described." },
-  { id: 2, name: "Sarah K.",   rating: 4, date: "Feb 3, 2025",  comment: "Really good product overall. Shipping was fast and packaging was excellent. Minor nitpick on the design but nothing major." },
-  { id: 3, name: "James R.",   rating: 5, date: "Feb 18, 2025", comment: "Best purchase I've made this year. Highly recommend to anyone looking for quality at a fair price." },
-  { id: 4, name: "Priya S.",   rating: 4, date: "Mar 1, 2025",  comment: "Great value for money. Works perfectly and looks even better in person than in the photos." },
+  { id: 1, name: "Alex M.", rating: 5, date: "Jan 12, 2025", comment: "Absolutely love this product! Exceeded all my expectations. Build quality is top notch and it works exactly as described." },
+  { id: 2, name: "Sarah K.", rating: 4, date: "Feb 3, 2025", comment: "Really good product overall. Shipping was fast and packaging was excellent. Minor nitpick on the design but nothing major." },
+  { id: 3, name: "James R.", rating: 5, date: "Feb 18, 2025", comment: "Best purchase I've made this year. Highly recommend to anyone looking for quality at a fair price." },
+  { id: 4, name: "Priya S.", rating: 4, date: "Mar 1, 2025", comment: "Great value for money. Works perfectly and looks even better in person than in the photos." },
 ];
 
 function StarRating({ rating, size = 14 }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-      {[1,2,3,4,5].map(s => (
+      {[1, 2, 3, 4, 5].map(s => (
         <svg key={s} width={size} height={size} viewBox="0 0 24 24" fill={s <= Math.round(rating) ? "#f59e0b" : "#2a2a2a"}>
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
         </svg>
       ))}
     </div>
@@ -42,11 +43,12 @@ export default function ProductDetailPage() {
   const navigate = useNavigate();
   const product = PRODUCTS.find(p => p.id === Number(id));
 
-  const [activeImg, setActiveImg]     = useState(0);
-  const [qty, setQty]                 = useState(1);
-  const [wished, setWished]           = useState(false);
+  const { addToCart } = useCart();
+  const [activeImg, setActiveImg] = useState(0);
+  const [qty, setQty] = useState(1);
+  const [wished, setWished] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
-  const [activeTab, setActiveTab]     = useState("description");
+  const [activeTab, setActiveTab] = useState("description");
 
   if (!product) return (
     <div style={{ background: "#0a0a0a", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
@@ -59,12 +61,12 @@ export default function ProductDetailPage() {
   );
 
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
-  const related  = PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
+  const related = PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
 
   const handleAddToCart = () => {
+    addToCart(product, qty);
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
-    // TODO: add to cart context when CartContext is ready
   };
 
   return (
@@ -81,11 +83,11 @@ export default function ProductDetailPage() {
         </div>
         {/* Breadcrumb */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#6b7280", marginLeft: 16 }}>
-          <span onClick={() => navigate("/")} style={{ cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color="#f59e0b"} onMouseLeave={e => e.target.style.color="#6b7280"}>Home</span>
+          <span onClick={() => navigate("/")} style={{ cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#f59e0b"} onMouseLeave={e => e.target.style.color = "#6b7280"}>Home</span>
           <span>›</span>
-          <span onClick={() => navigate("/products")} style={{ cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color="#f59e0b"} onMouseLeave={e => e.target.style.color="#6b7280"}>Products</span>
+          <span onClick={() => navigate("/products")} style={{ cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#f59e0b"} onMouseLeave={e => e.target.style.color = "#6b7280"}>Products</span>
           <span>›</span>
-          <span onClick={() => navigate("/products")} style={{ cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color="#f59e0b"} onMouseLeave={e => e.target.style.color="#6b7280"}>{product.category}</span>
+          <span onClick={() => navigate("/products")} style={{ cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#f59e0b"} onMouseLeave={e => e.target.style.color = "#6b7280"}>{product.category}</span>
           <span>›</span>
           <span style={{ color: "#e5e7eb" }}>{product.name.slice(0, 30)}...</span>
         </div>
@@ -112,7 +114,7 @@ export default function ProductDetailPage() {
               <button onClick={() => setWished(w => !w)}
                 style={{ position: "absolute", top: 16, right: 16, width: 40, height: 40, borderRadius: "50%", background: "#0a0a0aaa", border: "1px solid #333", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill={wished ? "#ef4444" : "none"} stroke={wished ? "#ef4444" : "#888"} strokeWidth="2">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                 </svg>
               </button>
             </div>
@@ -183,13 +185,13 @@ export default function ProductDetailPage() {
               <div style={{ display: "flex", alignItems: "center", background: "#141414", border: "1px solid #222", borderRadius: 12, overflow: "hidden" }}>
                 <button onClick={() => setQty(q => Math.max(1, q - 1))}
                   style={{ width: 42, height: 50, background: "none", border: "none", color: "#e5e7eb", fontSize: 18, cursor: "pointer", transition: "background 0.2s" }}
-                  onMouseEnter={e => e.target.style.background="#1f1f1f"}
-                  onMouseLeave={e => e.target.style.background="none"}>−</button>
+                  onMouseEnter={e => e.target.style.background = "#1f1f1f"}
+                  onMouseLeave={e => e.target.style.background = "none"}>−</button>
                 <span style={{ width: 40, textAlign: "center", fontSize: 15, fontWeight: 700, color: "#fff" }}>{qty}</span>
                 <button onClick={() => setQty(q => Math.min(product.stock, q + 1))}
                   style={{ width: 42, height: 50, background: "none", border: "none", color: "#e5e7eb", fontSize: 18, cursor: "pointer", transition: "background 0.2s" }}
-                  onMouseEnter={e => e.target.style.background="#1f1f1f"}
-                  onMouseLeave={e => e.target.style.background="none"}>+</button>
+                  onMouseEnter={e => e.target.style.background = "#1f1f1f"}
+                  onMouseLeave={e => e.target.style.background = "none"}>+</button>
               </div>
               {/* Add to cart */}
               <button className="add-btn" onClick={handleAddToCart}
@@ -200,8 +202,8 @@ export default function ProductDetailPage() {
 
             {/* Buy Now */}
             <button style={{ width: "100%", height: 50, background: "transparent", color: "#e5e7eb", border: "1px solid #2a2a2a", borderRadius: 12, fontSize: 15, fontWeight: 700, cursor: "pointer", transition: "all 0.2s", fontFamily: "'Sora', sans-serif" }}
-              onMouseEnter={e => { e.target.style.borderColor="#f59e0b"; e.target.style.color="#f59e0b"; }}
-              onMouseLeave={e => { e.target.style.borderColor="#2a2a2a"; e.target.style.color="#e5e7eb"; }}>
+              onMouseEnter={e => { e.target.style.borderColor = "#f59e0b"; e.target.style.color = "#f59e0b"; }}
+              onMouseLeave={e => { e.target.style.borderColor = "#2a2a2a"; e.target.style.color = "#e5e7eb"; }}>
               Buy Now
             </button>
 
@@ -250,7 +252,7 @@ export default function ProductDetailPage() {
                   <div style={{ fontSize: 12, color: "#6b7280", marginTop: 6 }}>{product.reviews.toLocaleString()} reviews</div>
                 </div>
                 <div style={{ flex: 1 }}>
-                  {[5,4,3,2,1].map(star => (
+                  {[5, 4, 3, 2, 1].map(star => (
                     <div key={star} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                       <span style={{ fontSize: 12, color: "#6b7280", width: 12 }}>{star}</span>
                       <span style={{ color: "#f59e0b", fontSize: 12 }}>★</span>
@@ -295,7 +297,7 @@ export default function ProductDetailPage() {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }}>
               {related.map(p => (
-                <div key={p.id} className="related-card" onClick={() => { navigate(`/products/${p.id}`); window.scrollTo(0,0); }}
+                <div key={p.id} className="related-card" onClick={() => { navigate(`/products/${p.id}`); window.scrollTo(0, 0); }}
                   style={{ background: "#111", border: "1px solid #1f1f1f", borderRadius: 14, overflow: "hidden" }}>
                   <img src={p.images[0]} alt={p.name} style={{ width: "100%", height: 160, objectFit: "cover", display: "block" }} />
                   <div style={{ padding: "12px 14px" }}>
@@ -304,7 +306,7 @@ export default function ProductDetailPage() {
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                       <span style={{ fontSize: 16, color: "#f59e0b", fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>${p.price}</span>
                       <div style={{ display: "flex", gap: 1 }}>
-                        {[1,2,3,4,5].map(s => <svg key={s} width="10" height="10" viewBox="0 0 24 24" fill={s <= Math.round(p.rating) ? "#f59e0b" : "#2a2a2a"}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
+                        {[1, 2, 3, 4, 5].map(s => <svg key={s} width="10" height="10" viewBox="0 0 24 24" fill={s <= Math.round(p.rating) ? "#f59e0b" : "#2a2a2a"}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>)}
                       </div>
                     </div>
                   </div>

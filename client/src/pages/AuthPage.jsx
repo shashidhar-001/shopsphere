@@ -280,7 +280,7 @@ export default function AuthPage() {
                 <div style={{ position: "absolute", top: "14%", right: "8%", background: "#141414", border: "1px solid #222", borderRadius: 16, padding: "14px 18px", animation: "float 4s ease-in-out infinite", boxShadow: "0 20px 40px rgba(0,0,0,0.5)" }}>
                     <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 4 }}>Just ordered</div>
                     <div style={{ fontSize: 13, color: "#e5e7eb", fontWeight: 600 }}>Sony WH-1000XM5</div>
-                    <div style={{ fontSize: 14, color: "#f59e0b", fontWeight: 800, marginTop: 4 }}>$299.99</div>
+                    <div style={{ fontSize: 14, color: "#f59e0b", fontWeight: 800, marginTop: 4 }}>₹299.99</div>
                 </div>
                 <div style={{ position: "absolute", bottom: "20%", right: "6%", background: "#141414", border: "1px solid #1f1f1f", borderRadius: 16, padding: "14px 18px", animation: "float 5s ease-in-out infinite 1.2s", boxShadow: "0 20px 40px rgba(0,0,0,0.5)" }}>
                     <div style={{ fontSize: 11, color: "#10b981", marginBottom: 4 }}>✓ Delivered</div>
