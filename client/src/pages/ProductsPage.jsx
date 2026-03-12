@@ -18,9 +18,9 @@ const STYLES = `
 function StarRating({ rating }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-      {[1,2,3,4,5].map(s => (
+      {[1, 2, 3, 4, 5].map(s => (
         <svg key={s} width="11" height="11" viewBox="0 0 24 24" fill={s <= Math.round(rating) ? "#f59e0b" : "#2a2a2a"}>
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
         </svg>
       ))}
       <span style={{ fontSize: 11, color: "#9ca3af", marginLeft: 4 }}>{rating}</span>
@@ -48,7 +48,7 @@ function ProductCard({ product, index }) {
         <div style={{ position: "absolute", top: 10, right: 10, background: "#0a0a0a99", borderRadius: "50%", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", border: "1px solid #333" }}
           onClick={e => { e.stopPropagation(); setWished(w => !w); }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill={wished ? "#ef4444" : "none"} stroke={wished ? "#ef4444" : "#888"} strokeWidth="2">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
         </div>
         <div style={{ position: "absolute", bottom: 10, right: 10, background: "#ef4444", color: "#fff", fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 5 }}>-{discount}%</div>
@@ -74,13 +74,16 @@ function ProductCard({ product, index }) {
 
 export default function ProductsPage() {
   const navigate = useNavigate();
-  const [search, setSearch]         = useState("");
   const params = new URLSearchParams(window.location.search);
   const initialCategory = params.get("category") || "All";
-  const [category, setCategory]     = useState(initialCategory);
-  const [sort, setSort]             = useState("featured");
+  const initialSearch = params.get("search") || "";
+
+  const [search, setSearch] = useState(initialSearch);
+  const [category, setCategory] = useState(initialCategory);
+
+  const [sort, setSort] = useState("featured");
   const [priceRange, setPriceRange] = useState([0, 700]);
-  const [minRating, setMinRating]   = useState(0);
+  const [minRating, setMinRating] = useState(0);
 
   const filtered = useMemo(() => {
     let list = [...PRODUCTS];
@@ -89,10 +92,10 @@ export default function ProductsPage() {
     list = list.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
     list = list.filter(p => p.rating >= minRating);
     switch (sort) {
-      case "price_low":  list.sort((a,b) => a.price - b.price); break;
-      case "price_high": list.sort((a,b) => b.price - a.price); break;
-      case "rating":     list.sort((a,b) => b.rating - a.rating); break;
-      case "newest":     list.sort((a,b) => b.id - a.id); break;
+      case "price_low": list.sort((a, b) => a.price - b.price); break;
+      case "price_high": list.sort((a, b) => b.price - a.price); break;
+      case "rating": list.sort((a, b) => b.rating - a.rating); break;
+      case "newest": list.sort((a, b) => b.id - a.id); break;
       default: break;
     }
     return list;
@@ -117,7 +120,7 @@ export default function ProductsPage() {
             onBlur={e => e.target.style.borderColor = "#2a2a2a"}
           />
           <svg style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
           </svg>
         </div>
         <select value={sort} onChange={e => setSort(e.target.value)}
@@ -173,7 +176,7 @@ export default function ProductsPage() {
             </div>
 
             {/* Reset */}
-            <button onClick={() => { setCategory("All"); setPriceRange([0,700]); setMinRating(0); setSearch(""); }}
+            <button onClick={() => { setCategory("All"); setPriceRange([0, 700]); setMinRating(0); setSearch(""); }}
               style={{ width: "100%", padding: "10px", background: "transparent", border: "1px solid #2a2a2a", borderRadius: 10, color: "#6b7280", fontSize: 13, cursor: "pointer", transition: "all 0.2s" }}
               onMouseEnter={e => { e.target.style.borderColor = "#ef4444"; e.target.style.color = "#ef4444"; }}
               onMouseLeave={e => { e.target.style.borderColor = "#2a2a2a"; e.target.style.color = "#6b7280"; }}>

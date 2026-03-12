@@ -180,16 +180,28 @@ export default function HomePage() {
 
         {/* Search */}
         <div style={{ flex: 1, maxWidth: 520, position: "relative" }}>
-          <input value={searchVal} onChange={e => setSearchVal(e.target.value)}
+          <input
+            value={searchVal}
+            onChange={e => setSearchVal(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === "Enter" && searchVal.trim()) {
+                navigate(`/products?search=${searchVal.trim()}`)
+              }
+            }}
             placeholder="Search products, brands, categories..."
             style={{ width: "100%", background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 12, padding: "10px 16px 10px 44px", color: "#e5e7eb", fontSize: 14, outline: "none", fontFamily: "'DM Sans', sans-serif" }}
             onFocus={e => e.target.style.borderColor = "#f59e0b"}
             onBlur={e => e.target.style.borderColor = "#2a2a2a"}
           />
-          <svg style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+          {/* Clickable search icon */}
+          <svg
+            onClick={() => { if (searchVal.trim()) navigate(`/products?search=${searchVal.trim()}`) }}
+            style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", cursor: "pointer" }}
+            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
             <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
           </svg>
         </div>
+
 
         {/* Nav links */}
         <div style={{ display: "flex", gap: 24, alignItems: "center", fontSize: 14, fontWeight: 500 }}>
