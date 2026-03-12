@@ -89,8 +89,8 @@ function ProductCard({ product, index }) {
         <StarRating rating={product.rating} />
         <p style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>{product.reviews.toLocaleString()} reviews</p>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, marginBottom: 12 }}>
-          <span style={{ fontSize: 18, color: "#f59e0b", fontWeight: 800 }}>${product.price}</span>
-          <span style={{ fontSize: 13, color: "#4b5563", textDecoration: "line-through" }}>${product.originalPrice}</span>
+          <span style={{ fontSize: 18, color: "#f59e0b", fontWeight: 800 }}>₹{product.price}</span>
+          <span style={{ fontSize: 13, color: "#4b5563", textDecoration: "line-through" }}>₹{product.originalPrice}</span>
         </div>
         <button onClick={handleCart} style={{
           width: "100%", padding: "10px", background: addedToCart ? "#10b981" : "#f59e0b",
@@ -155,7 +155,7 @@ export default function HomePage() {
       {/* TOP BAR */}
       <div style={{ background: "#f59e0b", padding: "6px 0", textAlign: "center" }}>
         <p style={{ fontSize: 12, color: "#000", fontWeight: 600, letterSpacing: 0.5 }}>
-          🚀 Free shipping on orders over $50 · Use code <strong>SAVE20</strong> for 20% off
+          🚀 Free shipping on orders over ₹50 · Use code <strong>SAVE20</strong> for 20% off
         </p>
       </div>
 
@@ -394,7 +394,7 @@ export default function HomePage() {
       <div style={{ background: "#0f0f0f", borderTop: "1px solid #1a1a1a", padding: "50px 40px" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 32 }}>
           {[
-            { icon: "🚚", title: "Free Delivery", desc: "On all orders over $50 nationwide" },
+            { icon: "🚚", title: "Free Delivery", desc: "On all orders over ₹50 nationwide" },
             { icon: "🔄", title: "Easy Returns", desc: "30-day hassle-free return policy" },
             { icon: "🔒", title: "Secure Payment", desc: "256-bit SSL encrypted checkout" },
             { icon: "🎧", title: "24/7 Support", desc: "Expert help anytime you need it" },
