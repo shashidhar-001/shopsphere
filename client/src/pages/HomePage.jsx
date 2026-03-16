@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useCart } from '../context/CartContext'
+
 
 const products = [
   { id: 1, name: "Wireless Noise-Cancelling Headphones", price: 299.99, originalPrice: 399.99, rating: 4.8, reviews: 2341, badge: "Best Seller", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80", category: "Electronics" },
@@ -87,8 +89,8 @@ function ProductCard({ product, index }) {
         <StarRating rating={product.rating} />
         <p style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>{product.reviews.toLocaleString()} reviews</p>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, marginBottom: 12 }}>
-          <span style={{ fontSize: 18, color: "#f59e0b", fontWeight: 800 }}>${product.price}</span>
-          <span style={{ fontSize: 13, color: "#4b5563", textDecoration: "line-through" }}>${product.originalPrice}</span>
+          <span style={{ fontSize: 18, color: "#f59e0b", fontWeight: 800 }}>₹{product.price}</span>
+          <span style={{ fontSize: 13, color: "#4b5563", textDecoration: "line-through" }}>₹{product.originalPrice}</span>
         </div>
         <button onClick={handleCart} style={{
           width: "100%", padding: "10px", background: addedToCart ? "#10b981" : "#f59e0b",
@@ -104,11 +106,13 @@ function ProductCard({ product, index }) {
 
 export default function HomePage() {
   const navigate = useNavigate()
+
   const { user, logout } = useAuth()          // ← ADD this
   const [dropdownOpen, setDropdownOpen] = useState(false)  // ← ADD this
 
   const [heroIdx, setHeroIdx] = useState(0);
-  const [cartCount, setCartCount] = useState(0);
+  const { cartCount } = useCart();
+
   const [searchVal, setSearchVal] = useState("");
   const [scrolled, setScrolled] = useState(false);
 
@@ -151,7 +155,7 @@ export default function HomePage() {
       {/* TOP BAR */}
       <div style={{ background: "#f59e0b", padding: "6px 0", textAlign: "center" }}>
         <p style={{ fontSize: 12, color: "#000", fontWeight: 600, letterSpacing: 0.5 }}>
-          🚀 Free shipping on orders over $50 · Use code <strong>SAVE20</strong> for 20% off
+          🚀 Free shipping on orders over ₹500 · Use code <strong>SAVE20</strong> for 20% off
         </p>
       </div>
 
@@ -176,16 +180,28 @@ export default function HomePage() {
 
         {/* Search */}
         <div style={{ flex: 1, maxWidth: 520, position: "relative" }}>
-          <input value={searchVal} onChange={e => setSearchVal(e.target.value)}
+          <input
+            value={searchVal}
+            onChange={e => setSearchVal(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === "Enter" && searchVal.trim()) {
+                navigate(`/products?search=${searchVal.trim()}`)
+              }
+            }}
             placeholder="Search products, brands, categories..."
             style={{ width: "100%", background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 12, padding: "10px 16px 10px 44px", color: "#e5e7eb", fontSize: 14, outline: "none", fontFamily: "'DM Sans', sans-serif" }}
             onFocus={e => e.target.style.borderColor = "#f59e0b"}
             onBlur={e => e.target.style.borderColor = "#2a2a2a"}
           />
-          <svg style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+          {/* Clickable search icon */}
+          <svg
+            onClick={() => { if (searchVal.trim()) navigate(`/products?search=${searchVal.trim()}`) }}
+            style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", cursor: "pointer" }}
+            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
             <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
           </svg>
         </div>
+
 
         {/* Nav links */}
         <div style={{ display: "flex", gap: 24, alignItems: "center", fontSize: 14, fontWeight: 500 }}>
@@ -198,11 +214,13 @@ export default function HomePage() {
 
         <div id="profile-dropdown" style={{ display: "flex", gap: 12, alignItems: "center", marginLeft: "auto" }}>
           {/* Cart */}
-          <button style={{ position: "relative", background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 12, width: 42, height: 42, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#e5e7eb" }}>
+          <button
+            onClick={() => navigate('/cart')}
+            style={{ position: "relative", background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 12, width: 42, height: 42, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#e5e7eb" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
-            <span style={{ position: "absolute", top: -4, right: -4, background: "#f59e0b", color: "#000", borderRadius: "50%", width: 18, height: 18, fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>3</span>
+            <span style={{ position: "absolute", top: -4, right: -4, background: "#f59e0b", color: "#000", borderRadius: "50%", width: 18, height: 18, fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>
           </button>
 
           {/* Sign In OR Profile */}
@@ -388,7 +406,7 @@ export default function HomePage() {
       <div style={{ background: "#0f0f0f", borderTop: "1px solid #1a1a1a", padding: "50px 40px" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 32 }}>
           {[
-            { icon: "🚚", title: "Free Delivery", desc: "On all orders over $50 nationwide" },
+            { icon: "🚚", title: "Free Delivery", desc: "On all orders over ₹50 nationwide" },
             { icon: "🔄", title: "Easy Returns", desc: "30-day hassle-free return policy" },
             { icon: "🔒", title: "Secure Payment", desc: "256-bit SSL encrypted checkout" },
             { icon: "🎧", title: "24/7 Support", desc: "Expert help anytime you need it" },
@@ -433,9 +451,9 @@ export default function HomePage() {
             <div>
               <h4 style={{ fontSize: 13, fontWeight: 700, color: "#e5e7eb", marginBottom: 16, letterSpacing: 1, textTransform: "uppercase", fontFamily: "'Sora', sans-serif" }}>Account</h4>
               {[
-                { label: "Sign In",  path: "/login"    },
-                { label: "Register", path: "/login"    },
-                { label: "Orders",   path: "/orders"   },
+                { label: "Sign In", path: "/login" },
+                { label: "Register", path: "/login" },
+                { label: "Orders", path: "/orders" },
                 { label: "Wishlist", path: "/wishlist" },
               ].map(l => (
                 <div key={l.label}
