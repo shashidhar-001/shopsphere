@@ -6,6 +6,8 @@ import AuthPage          from './pages/AuthPage'
 import ProductsPage      from './pages/ProductsPage'
 import ProductDetailPage from './pages/ProductDetailPage'
 import CartPage          from './pages/CartPage'        // ← ADD
+import CheckoutPage from './pages/CheckoutPage'   // ← ADD
+
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
             <Route path="/products"     element={<ProductsPage />} />
             <Route path="/products/:id" element={<ProductDetailPage />} />
             <Route path="/cart"         element={<CartPage />} />   {/* ← ADD */}
+            <Route path="/checkout" element={<CheckoutPage />} />
+
           </Routes>
         </BrowserRouter>
       </CartProvider>                                   {/* ← ADD */}
