@@ -155,7 +155,7 @@ export default function HomePage() {
       {/* TOP BAR */}
       <div style={{ background: "#f59e0b", padding: "6px 0", textAlign: "center" }}>
         <p style={{ fontSize: 12, color: "#000", fontWeight: 600, letterSpacing: 0.5 }}>
-          🚀 Free shipping on orders over ₹50 · Use code <strong>SAVE20</strong> for 20% off
+          🚀 Free shipping on orders over ₹500 · Use code <strong>SAVE20</strong> for 20% off
         </p>
       </div>
 
