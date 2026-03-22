@@ -9,6 +9,7 @@ import CartPage from './pages/CartPage'        // ← ADD
 import CheckoutPage from './pages/CheckoutPage'   // ← ADD
 import AdminDashboard from './pages/AdminDashboard'  // ← ADD
 import { ProductProvider } from './context/ProductContext'  // ← ADD
+import OrdersPage from './pages/OrdersPage'   // ← ADD
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
               <Route path="/cart" element={<CartPage />} />   {/* ← ADD */}
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/orders" element={<OrdersPage />} />
 
             </Routes>
           </BrowserRouter>
