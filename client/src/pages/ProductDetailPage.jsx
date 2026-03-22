@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import { PRODUCTS } from "../data/products";
+import { useProducts } from "../context/ProductContext";
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
@@ -39,6 +39,7 @@ function StarRating({ rating, size = 14 }) {
 }
 
 export default function ProductDetailPage() {
+  const { products: PRODUCTS } = useProducts();
   const { id } = useParams();
   const navigate = useNavigate();
   const product = PRODUCTS.find(p => p.id === Number(id));

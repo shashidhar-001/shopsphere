@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { PRODUCTS, CATEGORIES } from "../data/products";
+import { CATEGORIES } from "../data/products";
+import { useProducts } from "../context/ProductContext";
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
@@ -74,6 +75,7 @@ function ProductCard({ product, index }) {
 
 export default function ProductsPage() {
   const navigate = useNavigate();
+  const { products: PRODUCTS } = useProducts();
   const params = new URLSearchParams(window.location.search);
   const initialCategory = params.get("category") || "All";
   const initialSearch = params.get("search") || "";
