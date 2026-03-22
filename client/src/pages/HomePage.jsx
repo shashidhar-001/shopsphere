@@ -107,7 +107,7 @@ function ProductCard({ product, index }) {
 export default function HomePage() {
   const navigate = useNavigate()
 
-  const { user, logout } = useAuth()          // ← ADD this
+  const { user, role, logout } = useAuth()
   const [dropdownOpen, setDropdownOpen] = useState(false)  // ← ADD this
 
   const [heroIdx, setHeroIdx] = useState(0);
@@ -259,6 +259,19 @@ export default function HomePage() {
                       {item.label}
                     </button>
                   ))}
+
+                  {/* Admin Panel — only visible to admins */}
+                  {role === "admin" && (
+                    <button
+                      onClick={() => { navigate("/admin"); setDropdownOpen(false); }}
+                      style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", background: "none", border: "none", borderRadius: 10, color: "#f59e0b", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", textAlign: "left" }}
+                      onMouseEnter={e => e.currentTarget.style.background = "#1f1f1f"}
+                      onMouseLeave={e => e.currentTarget.style.background = "none"}
+                    >
+                      <span style={{ fontSize: 16 }}>🛡️</span>
+                      Admin Panel
+                    </button>
+                  )}
 
                   <div style={{ borderTop: "1px solid #222", marginTop: 6, paddingTop: 6 }}>
                     <button
