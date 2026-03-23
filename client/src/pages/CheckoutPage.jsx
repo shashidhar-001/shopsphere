@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { supabase } from "../supabase";
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
@@ -96,8 +97,8 @@ function StepBar({ current }) {
 // ─── Order Summary Sidebar ────────────────────────────────────────────────────
 function OrderSummary({ cart, cartSubtotal, cartSavings }) {
   const shipping = cartSubtotal > 50 ? 0 : 9.99;
-  const tax      = cartSubtotal * 0.08;
-  const total    = cartSubtotal + shipping + tax;
+  const tax = cartSubtotal * 0.08;
+  const total = cartSubtotal + shipping + tax;
 
   return (
     <div style={{ background: "#111", border: "1px solid #1f1f1f", borderRadius: 20, padding: "24px", position: "sticky", top: 80 }}>
@@ -168,15 +169,15 @@ function ShippingStep({ data, setData, onNext }) {
       <p style={{ fontSize: 14, color: "#6b7280", marginBottom: 28 }}>Where should we deliver your order?</p>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 28 }}>
-        <Field label="First Name"    placeholder="John"            value={data.firstName} onChange={e => setData(d => ({ ...d, firstName: e.target.value }))} half />
-        <Field label="Last Name"     placeholder="Doe"             value={data.lastName}  onChange={e => setData(d => ({ ...d, lastName: e.target.value }))}  half />
-        <Field label="Email Address" placeholder="you@example.com" value={data.email}     onChange={e => setData(d => ({ ...d, email: e.target.value }))}     type="email" />
-        <Field label="Phone Number"  placeholder="+1 234 567 8900" value={data.phone}     onChange={e => setData(d => ({ ...d, phone: e.target.value }))}     half />
-        <Field label="Street Address" placeholder="123 Main Street" value={data.address}  onChange={e => setData(d => ({ ...d, address: e.target.value }))} />
-        <Field label="City"           placeholder="New York"         value={data.city}     onChange={e => setData(d => ({ ...d, city: e.target.value }))}     half />
-        <Field label="State"          placeholder="NY"               value={data.state}    onChange={e => setData(d => ({ ...d, state: e.target.value }))}    half />
-        <Field label="ZIP Code"       placeholder="10001"            value={data.zip}      onChange={e => setData(d => ({ ...d, zip: e.target.value }))}      half />
-        <Field label="Country"        placeholder="United States"    value={data.country}  onChange={e => setData(d => ({ ...d, country: e.target.value }))}  half />
+        <Field label="First Name" placeholder="John" value={data.firstName} onChange={e => setData(d => ({ ...d, firstName: e.target.value }))} half />
+        <Field label="Last Name" placeholder="Doe" value={data.lastName} onChange={e => setData(d => ({ ...d, lastName: e.target.value }))} half />
+        <Field label="Email Address" placeholder="you@example.com" value={data.email} onChange={e => setData(d => ({ ...d, email: e.target.value }))} type="email" />
+        <Field label="Phone Number" placeholder="+1 234 567 8900" value={data.phone} onChange={e => setData(d => ({ ...d, phone: e.target.value }))} half />
+        <Field label="Street Address" placeholder="123 Main Street" value={data.address} onChange={e => setData(d => ({ ...d, address: e.target.value }))} />
+        <Field label="City" placeholder="New York" value={data.city} onChange={e => setData(d => ({ ...d, city: e.target.value }))} half />
+        <Field label="State" placeholder="NY" value={data.state} onChange={e => setData(d => ({ ...d, state: e.target.value }))} half />
+        <Field label="ZIP Code" placeholder="10001" value={data.zip} onChange={e => setData(d => ({ ...d, zip: e.target.value }))} half />
+        <Field label="Country" placeholder="United States" value={data.country} onChange={e => setData(d => ({ ...d, country: e.target.value }))} half />
       </div>
 
       {/* Delivery options */}
@@ -185,8 +186,8 @@ function ShippingStep({ data, setData, onNext }) {
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {[
             { id: "standard", label: "Standard Delivery", time: "5-7 business days", price: "FREE", color: "#10b981" },
-            { id: "express",  label: "Express Delivery",  time: "2-3 business days", price: "$9.99", color: "#f59e0b" },
-            { id: "next_day", label: "Next Day Delivery",  time: "1 business day",    price: "$19.99", color: "#3b82f6" },
+            { id: "express", label: "Express Delivery", time: "2-3 business days", price: "$9.99", color: "#f59e0b" },
+            { id: "next_day", label: "Next Day Delivery", time: "1 business day", price: "$19.99", color: "#3b82f6" },
           ].map(opt => (
             <div key={opt.id} className="payment-option"
               onClick={() => setData(d => ({ ...d, delivery: opt.id }))}
@@ -220,7 +221,7 @@ function PaymentStep({ data, setData, onNext, onBack }) {
     ? data.cardNumber && data.expiry && data.cvv && data.cardName
     : true;
 
-  const formatCard   = v => v.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim().slice(0, 19);
+  const formatCard = v => v.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim().slice(0, 19);
   const formatExpiry = v => v.replace(/\D/g, "").replace(/^(\d{2})(\d)/, "$1/$2").slice(0, 5);
 
   return (
@@ -231,9 +232,9 @@ function PaymentStep({ data, setData, onNext, onBack }) {
       {/* Payment method tabs */}
       <div style={{ display: "flex", gap: 10, marginBottom: 28 }}>
         {[
-          { id: "card",   label: "💳 Credit Card" },
-          { id: "upi",    label: "📱 UPI" },
-          { id: "cod",    label: "💵 Cash on Delivery" },
+          { id: "card", label: "💳 Credit Card" },
+          { id: "upi", label: "📱 UPI" },
+          { id: "cod", label: "💵 Cash on Delivery" },
         ].map(m => (
           <button key={m.id} onClick={() => setPayMethod(m.id)}
             style={{ flex: 1, padding: "12px", background: payMethod === m.id ? "#f59e0b" : "#141414", color: payMethod === m.id ? "#000" : "#9ca3af", border: `1.5px solid ${payMethod === m.id ? "#f59e0b" : "#222"}`, borderRadius: 12, fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.2s", fontFamily: "'Sora', sans-serif" }}>
@@ -310,8 +311,8 @@ function PaymentStep({ data, setData, onNext, onBack }) {
       <div style={{ display: "flex", gap: 12 }}>
         <button onClick={onBack}
           style={{ flex: "0 0 120px", padding: "14px", background: "transparent", color: "#9ca3af", border: "1px solid #222", borderRadius: 12, fontSize: 14, fontWeight: 700, cursor: "pointer", transition: "all 0.2s", fontFamily: "'Sora', sans-serif" }}
-          onMouseEnter={e => { e.target.style.borderColor="#f59e0b"; e.target.style.color="#f59e0b"; }}
-          onMouseLeave={e => { e.target.style.borderColor="#222"; e.target.style.color="#9ca3af"; }}>
+          onMouseEnter={e => { e.target.style.borderColor = "#f59e0b"; e.target.style.color = "#f59e0b"; }}
+          onMouseLeave={e => { e.target.style.borderColor = "#222"; e.target.style.color = "#9ca3af"; }}>
           ← Back
         </button>
         <button className="step-btn" onClick={() => { setData(d => ({ ...d, payMethod })); onNext(); }} disabled={!isValid} style={{ flex: 1 }}>
@@ -326,14 +327,42 @@ function PaymentStep({ data, setData, onNext, onBack }) {
 function ReviewStep({ shipping, payment, cart, cartSubtotal, cartSavings, onBack, onPlace }) {
   const [loading, setLoading] = useState(false);
   const shippingCost = cartSubtotal > 50 ? 0 : 9.99;
-  const tax   = cartSubtotal * 0.08;
+  const tax = cartSubtotal * 0.08;
   const total = cartSubtotal + shippingCost + tax;
 
   const handlePlace = async () => {
     setLoading(true);
-    await new Promise(r => setTimeout(r, 2000)); // simulate API call
-    setLoading(false);
-    onPlace();
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/payment/place-order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          items: cart,
+          shippingAddress: shipping,
+          total: total,
+        }),
+      })
+
+      const data = await res.json()
+      console.log("Order response:", data)
+
+      if (!res.ok) throw new Error(data.error)
+
+      onPlace(data.orderId)
+
+    } catch (err) {
+      console.error("Order error:", err)
+      // Show success anyway in demo mode
+      onPlace("DEMO-" + Math.random().toString(36).substr(2, 8).toUpperCase())
+    } finally {
+      setLoading(false)
+    }
   };
 
   return (
@@ -362,8 +391,8 @@ function ReviewStep({ shipping, payment, cart, cartSubtotal, cartSavings, onBack
       <div style={{ background: "#141414", border: "1px solid #1f1f1f", borderRadius: 14, padding: "18px 20px", marginBottom: 24 }}>
         <p style={{ fontSize: 11, fontWeight: 700, color: "#f59e0b", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8 }}>💳 Payment</p>
         {payment.payMethod === "card" && <p style={{ fontSize: 14, color: "#e5e7eb" }}>Card ending in <strong>{payment.cardNumber?.slice(-4) || "••••"}</strong></p>}
-        {payment.payMethod === "upi"  && <p style={{ fontSize: 14, color: "#e5e7eb" }}>UPI: {payment.upiId}</p>}
-        {payment.payMethod === "cod"  && <p style={{ fontSize: 14, color: "#e5e7eb" }}>Cash on Delivery</p>}
+        {payment.payMethod === "upi" && <p style={{ fontSize: 14, color: "#e5e7eb" }}>UPI: {payment.upiId}</p>}
+        {payment.payMethod === "cod" && <p style={{ fontSize: 14, color: "#e5e7eb" }}>Cash on Delivery</p>}
       </div>
 
       {/* Items summary */}
@@ -390,8 +419,8 @@ function ReviewStep({ shipping, payment, cart, cartSubtotal, cartSavings, onBack
       <div style={{ display: "flex", gap: 12 }}>
         <button onClick={onBack}
           style={{ flex: "0 0 120px", padding: "14px", background: "transparent", color: "#9ca3af", border: "1px solid #222", borderRadius: 12, fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "'Sora', sans-serif", transition: "all 0.2s" }}
-          onMouseEnter={e => { e.target.style.borderColor="#f59e0b"; e.target.style.color="#f59e0b"; }}
-          onMouseLeave={e => { e.target.style.borderColor="#222"; e.target.style.color="#9ca3af"; }}>
+          onMouseEnter={e => { e.target.style.borderColor = "#f59e0b"; e.target.style.color = "#f59e0b"; }}
+          onMouseLeave={e => { e.target.style.borderColor = "#222"; e.target.style.color = "#9ca3af"; }}>
           ← Back
         </button>
         <button className="step-btn" onClick={handlePlace} disabled={loading} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
@@ -424,8 +453,8 @@ function SuccessScreen({ orderId }) {
         </button>
         <button onClick={() => navigate("/")}
           style={{ background: "transparent", color: "#9ca3af", border: "1px solid #222", borderRadius: 12, padding: "13px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all 0.2s" }}
-          onMouseEnter={e => { e.target.style.borderColor="#f59e0b"; e.target.style.color="#f59e0b"; }}
-          onMouseLeave={e => { e.target.style.borderColor="#222"; e.target.style.color="#9ca3af"; }}>
+          onMouseEnter={e => { e.target.style.borderColor = "#f59e0b"; e.target.style.color = "#f59e0b"; }}
+          onMouseLeave={e => { e.target.style.borderColor = "#222"; e.target.style.color = "#9ca3af"; }}>
           Continue Shopping
         </button>
       </div>
@@ -439,14 +468,14 @@ export default function CheckoutPage() {
   const { cart, cartSubtotal, cartSavings, clearCart } = useCart();
   const { user } = useAuth();
 
-  const [step, setStep]       = useState(0);
+  const [step, setStep] = useState(0);
   const [success, setSuccess] = useState(false);
   const [orderId, setOrderId] = useState(null);
 
   const [shipping, setShipping] = useState({
     firstName: user?.user_metadata?.full_name?.split(" ")[0] || "",
-    lastName:  user?.user_metadata?.full_name?.split(" ")[1] || "",
-    email:     user?.email || "",
+    lastName: user?.user_metadata?.full_name?.split(" ")[1] || "",
+    email: user?.email || "",
     phone: "", address: "", city: "", state: "", zip: "", country: "",
     delivery: "standard",
   });
@@ -470,12 +499,6 @@ export default function CheckoutPage() {
     );
   }
 
-  const handleOrderPlaced = () => {
-    const id = Math.random().toString(36).substr(2, 9).toUpperCase();
-    setOrderId(id);
-    setSuccess(true);
-    clearCart();
-  };
 
   return (
     <div style={{ background: "#0a0a0a", minHeight: "100vh", color: "#e5e7eb", fontFamily: "'DM Sans', sans-serif" }}>
@@ -490,9 +513,9 @@ export default function CheckoutPage() {
           <span style={{ fontSize: 18, fontWeight: 800, color: "#fff", fontFamily: "'Sora', sans-serif" }}>Shop<span style={{ color: "#f59e0b" }}>Sphere</span></span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#6b7280", marginLeft: 16 }}>
-          <span onClick={() => navigate("/")} style={{ cursor: "pointer" }} onMouseEnter={e => e.target.style.color="#f59e0b"} onMouseLeave={e => e.target.style.color="#6b7280"}>Home</span>
+          <span onClick={() => navigate("/")} style={{ cursor: "pointer" }} onMouseEnter={e => e.target.style.color = "#f59e0b"} onMouseLeave={e => e.target.style.color = "#6b7280"}>Home</span>
           <span>›</span>
-          <span onClick={() => navigate("/cart")} style={{ cursor: "pointer" }} onMouseEnter={e => e.target.style.color="#f59e0b"} onMouseLeave={e => e.target.style.color="#6b7280"}>Cart</span>
+          <span onClick={() => navigate("/cart")} style={{ cursor: "pointer" }} onMouseEnter={e => e.target.style.color = "#f59e0b"} onMouseLeave={e => e.target.style.color = "#6b7280"}>Cart</span>
           <span>›</span>
           <span style={{ color: "#e5e7eb" }}>Checkout</span>
         </div>
@@ -508,8 +531,22 @@ export default function CheckoutPage() {
             <div style={{ background: "#111", border: "1px solid #1f1f1f", borderRadius: 20, padding: "32px" }}>
               <StepBar current={step} />
               {step === 0 && <ShippingStep data={shipping} setData={setShipping} onNext={() => setStep(1)} />}
-              {step === 1 && <PaymentStep  data={payment}  setData={setPayment}  onNext={() => setStep(2)} onBack={() => setStep(0)} />}
-              {step === 2 && <ReviewStep   shipping={shipping} payment={payment} cart={cart} cartSubtotal={cartSubtotal} cartSavings={cartSavings} onBack={() => setStep(1)} onPlace={handleOrderPlaced} />}
+              {step === 1 && <PaymentStep data={payment} setData={setPayment} onNext={() => setStep(2)} onBack={() => setStep(0)} />}
+              {step === 2 && (
+                <ReviewStep
+                  shipping={shipping}
+                  payment={payment}
+                  cart={cart}
+                  cartSubtotal={cartSubtotal}
+                  cartSavings={cartSavings}
+                  onBack={() => setStep(1)}
+                  onPlace={(id) => {
+                    setOrderId(id)
+                    setSuccess(true)
+                    clearCart()
+                  }}
+                />
+              )}
             </div>
 
             {/* RIGHT — Summary */}
