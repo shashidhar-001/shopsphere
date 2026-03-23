@@ -92,7 +92,7 @@ function Sidebar({ active, setActive, navigate }) {
           </div>
         ))}
 
-        <div style={{ marginTop: "auto", paddingTop: 16, borderTop: "1px solid #1a1a1a", marginTop: 16 }}>
+        <div style={{ marginTop: "auto", paddingTop: 16, borderTop: "1px solid #1a1a1a" }}>
           <div className="nav-item"
             onClick={() => navigate("/")}
             style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 14px", color: "#6b7280", fontSize: 14 }}>
