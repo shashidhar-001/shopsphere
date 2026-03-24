@@ -116,7 +116,7 @@ function OrderSummary({ cart, cartSubtotal, cartSavings }) {
               <p style={{ fontSize: 12, color: "#e5e7eb", fontWeight: 600, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name}</p>
               <p style={{ fontSize: 11, color: "#6b7280" }}>{item.brand}</p>
             </div>
-            <span style={{ fontSize: 13, color: "#f59e0b", fontWeight: 800, fontFamily: "'Sora', sans-serif", flexShrink: 0 }}>${(item.price * item.qty).toFixed(2)}</span>
+            <span style={{ fontSize: 13, color: "#f59e0b", fontWeight: 800, fontFamily: "'Sora', sans-serif", flexShrink: 0 }}>₹{(item.price * item.qty).toFixed(2)}</span>
           </div>
         ))}
       </div>
@@ -125,12 +125,12 @@ function OrderSummary({ cart, cartSubtotal, cartSavings }) {
       <div style={{ borderTop: "1px solid #1a1a1a", paddingTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
           <span style={{ color: "#9ca3af" }}>Subtotal</span>
-          <span style={{ color: "#e5e7eb" }}>${cartSubtotal.toFixed(2)}</span>
+          <span style={{ color: "#e5e7eb" }}>₹{cartSubtotal.toFixed(2)}</span>
         </div>
         {cartSavings > 0 && (
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
             <span style={{ color: "#10b981" }}>Savings</span>
-            <span style={{ color: "#10b981" }}>-${cartSavings.toFixed(2)}</span>
+            <span style={{ color: "#10b981" }}>-₹{cartSavings.toFixed(2)}</span>
           </div>
         )}
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
@@ -139,17 +139,17 @@ function OrderSummary({ cart, cartSubtotal, cartSavings }) {
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
           <span style={{ color: "#9ca3af" }}>Tax (8%)</span>
-          <span style={{ color: "#e5e7eb" }}>${tax.toFixed(2)}</span>
+          <span style={{ color: "#e5e7eb" }}>₹{tax.toFixed(2)}</span>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 16, fontWeight: 800, paddingTop: 10, borderTop: "1px solid #1a1a1a", marginTop: 4 }}>
           <span style={{ color: "#fff", fontFamily: "'Sora', sans-serif" }}>Total</span>
-          <span style={{ color: "#f59e0b", fontFamily: "'Sora', sans-serif" }}>${total.toFixed(2)}</span>
+          <span style={{ color: "#f59e0b", fontFamily: "'Sora', sans-serif" }}>₹{total.toFixed(2)}</span>
         </div>
       </div>
 
       {/* Trust */}
       <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid #1a1a1a", display: "flex", flexDirection: "column", gap: 8 }}>
-        {[["🔒", "SSL Encrypted Checkout"], ["🚚", "Free shipping over $50"], ["🔄", "30-day easy returns"]].map(([icon, text]) => (
+        {[["🔒", "SSL Encrypted Checkout"], ["🚚", "Free shipping over ₹1500"], ["🔄", "30-day easy returns"]].map(([icon, text]) => (
           <div key={text} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#6b7280" }}>
             <span>{icon}</span><span>{text}</span>
           </div>
@@ -186,8 +186,8 @@ function ShippingStep({ data, setData, onNext }) {
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {[
             { id: "standard", label: "Standard Delivery", time: "5-7 business days", price: "FREE", color: "#10b981" },
-            { id: "express", label: "Express Delivery", time: "2-3 business days", price: "$9.99", color: "#f59e0b" },
-            { id: "next_day", label: "Next Day Delivery", time: "1 business day", price: "$19.99", color: "#3b82f6" },
+            { id: "express", label: "Express Delivery", time: "2-3 business days", price: "₹9.99", color: "#f59e0b" },
+            { id: "next_day", label: "Next Day Delivery", time: "1 business day", price: "₹19.99", color: "#3b82f6" },
           ].map(opt => (
             <div key={opt.id} className="payment-option"
               onClick={() => setData(d => ({ ...d, delivery: opt.id }))}
@@ -304,7 +304,7 @@ function PaymentStep({ data, setData, onNext, onBack }) {
         <div style={{ marginBottom: 28, background: "#f59e0b12", border: "1px solid #f59e0b33", borderRadius: 14, padding: "20px", animation: "fadeIn 0.3s ease" }}>
           <div style={{ fontSize: 32, marginBottom: 10 }}>💵</div>
           <h3 style={{ fontSize: 16, fontWeight: 700, color: "#f59e0b", fontFamily: "'Sora', sans-serif", marginBottom: 6 }}>Cash on Delivery</h3>
-          <p style={{ fontSize: 13, color: "#9ca3af", lineHeight: 1.6 }}>Pay with cash when your order is delivered. Please keep exact change ready. An extra charge of $2.99 applies for COD orders.</p>
+          <p style={{ fontSize: 13, color: "#9ca3af", lineHeight: 1.6 }}>Pay with cash when your order is delivered. Please keep exact change ready. An extra charge of ₹2.99 applies for COD orders.</p>
         </div>
       )}
 
@@ -407,12 +407,12 @@ function ReviewStep({ shipping, payment, cart, cartSubtotal, cartSavings, onBack
                 <p style={{ fontSize: 11, color: "#6b7280" }}>Qty: {item.qty}</p>
               </div>
             </div>
-            <span style={{ fontSize: 14, color: "#f59e0b", fontWeight: 800 }}>${(item.price * item.qty).toFixed(2)}</span>
+            <span style={{ fontSize: 14, color: "#f59e0b", fontWeight: 800 }}>₹{(item.price * item.qty).toFixed(2)}</span>
           </div>
         ))}
         <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 4 }}>
           <span style={{ fontSize: 15, fontWeight: 800, color: "#fff", fontFamily: "'Sora', sans-serif" }}>Total</span>
-          <span style={{ fontSize: 18, fontWeight: 800, color: "#f59e0b", fontFamily: "'Sora', sans-serif" }}>${total.toFixed(2)}</span>
+          <span style={{ fontSize: 18, fontWeight: 800, color: "#f59e0b", fontFamily: "'Sora', sans-serif" }}>₹{total.toFixed(2)}</span>
         </div>
       </div>
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useProducts } from "../context/ProductContext";
+import { useEffect } from "react";
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
@@ -69,6 +70,10 @@ export default function ProductDetailPage() {
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   return (
     <div style={{ background: "#0a0a0a", minHeight: "100vh", color: "#e5e7eb", fontFamily: "'DM Sans', sans-serif" }}>
@@ -305,7 +310,7 @@ export default function ProductDetailPage() {
                     <p style={{ fontSize: 10, color: "#f59e0b", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{p.brand}</p>
                     <h4 style={{ fontSize: 13, color: "#e5e7eb", fontWeight: 600, marginBottom: 8, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{p.name}</h4>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <span style={{ fontSize: 16, color: "#f59e0b", fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>${p.price}</span>
+                      <span style={{ fontSize: 16, color: "#f59e0b", fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>₹{p.price}</span>
                       <div style={{ display: "flex", gap: 1 }}>
                         {[1, 2, 3, 4, 5].map(s => <svg key={s} width="10" height="10" viewBox="0 0 24 24" fill={s <= Math.round(p.rating) ? "#f59e0b" : "#2a2a2a"}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>)}
                       </div>

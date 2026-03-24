@@ -46,7 +46,7 @@ function CartItem({ item, index }) {
               {item.name}
             </h3>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 18, color: "#f59e0b", fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>${item.price}</span>
+              <span style={{ fontSize: 18, color: "#f59e0b", fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>₹{item.price}</span>
               <span style={{ fontSize: 13, color: "#374151", textDecoration: "line-through" }}>₹{item.originalPrice}</span>
               <span style={{ fontSize: 11, background: "#ef444422", color: "#ef4444", padding: "2px 8px", borderRadius: 6, fontWeight: 700 }}>-{discount}%</span>
             </div>
@@ -187,7 +187,7 @@ export default function CartPage() {
               <div style={{ background: "#10b98115", border: "1px solid #10b98133", borderRadius: 14, padding: "14px 20px", display: "flex", alignItems: "center", gap: 10, marginTop: 8 }}>
                 <span style={{ fontSize: 20 }}>🎉</span>
                 <p style={{ fontSize: 14, color: "#10b981", fontWeight: 600 }}>
-                  You're saving <strong>${cartSavings.toFixed(2)}</strong> on this order!
+                  You're saving <strong>₹{cartSavings.toFixed(2)}</strong> on this order!
                 </p>
               </div>
             )}
@@ -204,12 +204,12 @@ export default function CartPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20, paddingBottom: 20, borderBottom: "1px solid #1a1a1a" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}>
                   <span style={{ color: "#9ca3af" }}>Subtotal ({cartCount} items)</span>
-                  <span style={{ color: "#e5e7eb", fontWeight: 600 }}>${cartSubtotal.toFixed(2)}</span>
+                  <span style={{ color: "#e5e7eb", fontWeight: 600 }}>₹{cartSubtotal.toFixed(2)}</span>
                 </div>
                 {cartSavings > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}>
                     <span style={{ color: "#10b981" }}>Savings</span>
-                    <span style={{ color: "#10b981", fontWeight: 600 }}>-${cartSavings.toFixed(2)}</span>
+                    <span style={{ color: "#10b981", fontWeight: 600 }}>-₹{cartSavings.toFixed(2)}</span>
                   </div>
                 )}
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}>
@@ -220,12 +220,12 @@ export default function CartPage() {
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}>
                   <span style={{ color: "#9ca3af" }}>Tax (8%)</span>
-                  <span style={{ color: "#e5e7eb", fontWeight: 600 }}>${tax.toFixed(2)}</span>
+                  <span style={{ color: "#e5e7eb", fontWeight: 600 }}>₹{tax.toFixed(2)}</span>
                 </div>
                 {discount > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}>
                     <span style={{ color: "#f59e0b" }}>Coupon Discount</span>
-                    <span style={{ color: "#f59e0b", fontWeight: 600 }}>-${discount.toFixed(2)}</span>
+                    <span style={{ color: "#f59e0b", fontWeight: 600 }}>-₹{discount.toFixed(2)}</span>
                   </div>
                 )}
               </div>
@@ -233,7 +233,7 @@ export default function CartPage() {
               {/* Total */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
                 <span style={{ fontSize: 16, fontWeight: 800, color: "#fff", fontFamily: "'Sora', sans-serif" }}>Total</span>
-                <span style={{ fontSize: 24, fontWeight: 800, color: "#f59e0b", fontFamily: "'Sora', sans-serif" }}>${total.toFixed(2)}</span>
+                <span style={{ fontSize: 24, fontWeight: 800, color: "#f59e0b", fontFamily: "'Sora', sans-serif" }}>₹{total.toFixed(2)}</span>
               </div>
 
               {/* Free shipping notice */}
