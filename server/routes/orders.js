@@ -58,21 +58,31 @@ router.post('/save', authenticate, async (req, res) => {
 // ── Get User's Orders ─────────────────────────────────────────────────────────
 router.get('/my-orders', authenticate, async (req, res) => {
   try {
-    const { data: orders, error } = await supabase
+    // Step 1 — Get orders
+    const { data: orders, error: ordersError } = await supabase
       .from('orders')
-      .select(`
-        *,
-        order_items (
-          *,
-          products (name, images, price)
-        )
-      `)
+      .select('*')
       .eq('user_id', req.user.id)
       .order('created_at', { ascending: false })
 
-    if (error) throw error
+    if (ordersError) throw ordersError
 
-    res.json({ orders })
+    // Step 2 — Get order items for each order separately
+    const ordersWithItems = await Promise.all(
+      orders.map(async (order) => {
+        const { data: items, error: itemsError } = await supabase
+          .from('order_items')
+          .select('*')
+          .eq('order_id', order.id)
+
+        return {
+          ...order,
+          order_items: itemsError ? [] : items,
+        }
+      })
+    )
+
+    res.json({ orders: ordersWithItems })
   } catch (err) {
     console.error('Fetch orders error:', err)
     res.status(500).json({ error: err.message })
