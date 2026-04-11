@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useResponsive } from "../hooks/useResponsive";
 import { CATEGORIES } from "../data/products";
 import { useProducts } from "../context/ProductContext";
 
@@ -75,6 +76,7 @@ function ProductCard({ product, index }) {
 
 export default function ProductsPage() {
   const navigate = useNavigate();
+  const { isMobile, isTablet } = useResponsive();
   const { products: PRODUCTS } = useProducts();
   const params = new URLSearchParams(window.location.search);
   const initialCategory = params.get("category") || "All";
@@ -135,10 +137,9 @@ export default function ProductsPage() {
         </select>
       </nav>
 
-      <div style={{ display: "flex", maxWidth: 1400, margin: "0 auto", padding: "32px 40px", gap: 28 }}>
-
+      <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", maxWidth: 1400, margin: "0 auto", padding: isMobile ? "16px" : "32px 40px", gap: 28 }}>
         {/* SIDEBAR FILTERS */}
-        <div style={{ width: 240, flexShrink: 0 }}>
+        <div style={{ width: isMobile ? "100%" : 240, flexShrink: 0, display: isMobile ? "none" : "block" }}>
           <div style={{ background: "#111", border: "1px solid #1f1f1f", borderRadius: 16, padding: "20px", position: "sticky", top: 80 }}>
 
             <h3 style={{ fontSize: 14, fontWeight: 800, color: "#fff", fontFamily: "'Sora', sans-serif", marginBottom: 20 }}>Filters</h3>
@@ -217,7 +218,7 @@ export default function ProductsPage() {
               <p style={{ fontSize: 14, color: "#6b7280" }}>Try adjusting your filters or search term</p>
             </div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: isMobile ? 12 : 20 }}>
               {filtered.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
             </div>
           )}

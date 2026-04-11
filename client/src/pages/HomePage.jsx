@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useResponsive } from '../hooks/useResponsive'
 import { useCart } from '../context/CartContext'
 
 
@@ -106,8 +107,8 @@ function ProductCard({ product, index }) {
 
 export default function HomePage() {
   const navigate = useNavigate()
-
   const { user, role, logout } = useAuth()
+  const { isMobile, isTablet } = useResponsive()
   const [dropdownOpen, setDropdownOpen] = useState(false)  // ← ADD this
 
   const [heroIdx, setHeroIdx] = useState(0);
@@ -165,7 +166,7 @@ export default function HomePage() {
         background: scrolled ? "rgba(10,10,10,0.95)" : "#111",
         backdropFilter: "blur(20px)",
         borderBottom: "1px solid #1f1f1f",
-        padding: "0 40px", height: 64,
+        padding: isMobile ? "0 16px" : "0 40px", height: 64,
         display: "flex", alignItems: "center", gap: 24,
         transition: "all 0.3s",
         fontFamily: "'Sora', sans-serif"
@@ -204,7 +205,7 @@ export default function HomePage() {
 
 
         {/* Nav links */}
-        <div style={{ display: "flex", gap: 24, alignItems: "center", fontSize: 14, fontWeight: 500 }}>
+        <div style={{ display: isMobile ? "none" : "flex", gap: 24, alignItems: "center", fontSize: 14, fontWeight: 500 }}>
           {["Deals", "Categories", "New In"].map(l => (
             <span key={l} style={{ color: "#9ca3af", cursor: "pointer", transition: "color 0.2s" }}
               onMouseEnter={e => e.target.style.color = "#f59e0b"}
@@ -313,26 +314,25 @@ export default function HomePage() {
           </div>
         ))}
 
-        <div style={{ position: "relative", zIndex: 10, height: "100%", display: "flex", alignItems: "center", padding: "0 60px", fontFamily: "'Sora', sans-serif" }}>
-          <div style={{ animation: "slideIn 0.7s ease" }} key={heroIdx}>
-            <div style={{ display: "inline-block", background: slide.accent + "22", border: `1px solid ${slide.accent}55`, color: slide.accent, fontSize: 11, fontWeight: 700, padding: "4px 14px", borderRadius: 20, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 16 }}>
-              {slide.tag}
-            </div>
-            <h1 style={{ fontSize: 62, fontWeight: 800, color: "#fff", lineHeight: 1.1, marginBottom: 16, whiteSpace: "pre-line" }}>{slide.title}</h1>
-            <p style={{ fontSize: 17, color: "#d1d5db", maxWidth: 420, lineHeight: 1.6, marginBottom: 32 }}>{slide.subtitle}</p>
-            <div style={{ display: "flex", gap: 12 }}>
-              <button
-                onClick={() => navigate('/products')}
-                style={{ background: slide.accent, color: "#000", border: "none", borderRadius: 14, padding: "14px 32px", fontSize: 15, fontWeight: 800, cursor: "pointer", letterSpacing: 0.3 }}>
-                {slide.cta} →
-              </button>
-              <button
-                onClick={() => navigate('/products')}
-                style={{ background: "transparent", color: "#fff", border: "1px solid #ffffff44", borderRadius: 14, padding: "14px 24px", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
-                View Deals
-              </button>
-            </div>
+        <div style={{ position: "relative", zIndex: 10, height: "100%", display: "flex", alignItems: "center", padding: isMobile ? "0 20px" : "0 60px", fontFamily: "'Sora', sans-serif" }}>          <div style={{ animation: "slideIn 0.7s ease" }} key={heroIdx}>
+          <div style={{ display: "inline-block", background: slide.accent + "22", border: `1px solid ${slide.accent}55`, color: slide.accent, fontSize: 11, fontWeight: 700, padding: "4px 14px", borderRadius: 20, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 16 }}>
+            {slide.tag}
           </div>
+          <h1 style={{ fontSize: isMobile ? 32 : 62, fontWeight: 800, color: "#fff", lineHeight: 1.1, marginBottom: 16, whiteSpace: "pre-line" }}>{slide.title}</h1>
+          <p style={{ fontSize: 17, color: "#d1d5db", maxWidth: 420, lineHeight: 1.6, marginBottom: 32 }}>{slide.subtitle}</p>
+          <div style={{ display: "flex", gap: 12 }}>
+            <button
+              onClick={() => navigate('/products')}
+              style={{ background: slide.accent, color: "#000", border: "none", borderRadius: 14, padding: "14px 32px", fontSize: 15, fontWeight: 800, cursor: "pointer", letterSpacing: 0.3 }}>
+              {slide.cta} →
+            </button>
+            <button
+              onClick={() => navigate('/products')}
+              style={{ background: "transparent", color: "#fff", border: "1px solid #ffffff44", borderRadius: 14, padding: "14px 24px", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+              View Deals
+            </button>
+          </div>
+        </div>
         </div>
 
         {/* Slide dots */}
@@ -354,7 +354,7 @@ export default function HomePage() {
       </div>
 
       {/* CATEGORIES */}
-      <div style={{ padding: "60px 40px", maxWidth: 1280, margin: "0 auto" }}>
+      <div style={{ padding: isMobile ? "32px 16px" : "60px 40px", maxWidth: 1280, margin: "0 auto" }}>
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 32 }}>
           <div>
             <p style={{ fontSize: 12, color: "#f59e0b", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", fontFamily: "'Sora', sans-serif" }}>Browse</p>
@@ -362,7 +362,7 @@ export default function HomePage() {
           </div>
           <span onClick={() => navigate('/products')} style={{ color: "#f59e0b", fontSize: 14, cursor: "pointer", fontWeight: 600 }}>View all →</span>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : isTablet ? "repeat(3, 1fr)" : "repeat(6, 1fr)", gap: 16 }}>
           {categories.map((cat, i) => (
             <div key={cat.name}
               onClick={() => navigate(`/products?category=${cat.name}`)}
@@ -383,7 +383,7 @@ export default function HomePage() {
       </div>
 
       {/* FEATURED PRODUCTS */}
-      <div style={{ padding: "20px 40px 60px", maxWidth: 1280, margin: "0 auto" }}>
+      <div style={{ padding: isMobile ? "12px 16px 32px" : "20px 40px 60px", maxWidth: 1280, margin: "0 auto" }}>
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 32 }}>
           <div>
             <p style={{ fontSize: 12, color: "#f59e0b", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", fontFamily: "'Sora', sans-serif" }}>Hand-picked</p>
@@ -395,8 +395,7 @@ export default function HomePage() {
             View all →
           </span>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }}>
-          {products.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : isTablet ? "repeat(3, 1fr)" : "repeat(4, 1fr)", gap: isMobile ? 12 : 20 }}>          {products.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
         </div>
       </div>
 
@@ -417,7 +416,7 @@ export default function HomePage() {
 
       {/* WHY US */}
       <div style={{ background: "#0f0f0f", borderTop: "1px solid #1a1a1a", padding: "50px 40px" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 32 }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: isMobile ? 16 : 32 }}>
           {[
             { icon: "🚚", title: "Free Delivery", desc: "On all orders over ₹50 nationwide" },
             { icon: "🔄", title: "Easy Returns", desc: "30-day hassle-free return policy" },
@@ -436,9 +435,9 @@ export default function HomePage() {
       </div>
 
       {/* FOOTER */}
-      <footer style={{ background: "#080808", borderTop: "1px solid #161616", padding: "50px 40px 30px" }}>
+      <footer style={{ background: "#080808", borderTop: "1px solid #161616", padding: isMobile ? "32px 16px 24px" : "50px 40px 30px" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1.5fr", gap: 40, marginBottom: 48 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "2fr 1fr 1fr 1fr 1.5fr", gap: isMobile ? 24 : 40, marginBottom: 48 }}>
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
                 <div style={{ width: 32, height: 32, background: "#f59e0b", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabase";
+import { useResponsive } from "../hooks/useResponsive";
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
@@ -465,6 +466,7 @@ function SuccessScreen({ orderId }) {
 // ─── MAIN CHECKOUT PAGE ───────────────────────────────────────────────────────
 export default function CheckoutPage() {
   const navigate = useNavigate();
+  const { isMobile } = useResponsive();
   const { cart, cartSubtotal, cartSavings, clearCart } = useCart();
   const { user } = useAuth();
 
@@ -521,12 +523,12 @@ export default function CheckoutPage() {
         </div>
       </nav>
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 40px" }}>
 
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: isMobile ? "20px 16px" : "36px 40px" }}>
         {success ? (
           <SuccessScreen orderId={orderId} />
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: 28 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 360px", gap: 28 }}>
             {/* LEFT — Steps */}
             <div style={{ background: "#111", border: "1px solid #1f1f1f", borderRadius: 20, padding: "32px" }}>
               <StepBar current={step} />

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useResponsive } from "../hooks/useResponsive";
+
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
@@ -88,6 +90,7 @@ function CartItem({ item, index }) {
 
 export default function CartPage() {
   const navigate = useNavigate();
+  const { isMobile } = useResponsive();
   const { cart, cartCount, cartSubtotal, cartSavings, clearCart } = useCart();
   const [coupon, setCoupon]   = useState("");
   const [discount, setDiscount] = useState(0);
@@ -158,8 +161,8 @@ export default function CartPage() {
         </button>
       </nav>
 
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "36px 40px" }}>
 
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: isMobile ? "20px 16px" : "36px 40px" }}>
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
           <div>
@@ -176,8 +179,8 @@ export default function CartPage() {
           </button>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 28 }}>
 
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 380px", gap: 28 }}>
           {/* LEFT — Cart Items */}
           <div>
             {cart.map((item, i) => <CartItem key={item.id} item={item} index={i} />)}

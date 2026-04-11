@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useProducts } from "../context/ProductContext";
 import { useEffect } from "react";
+import { useResponsive } from "../hooks/useResponsive";
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
@@ -40,6 +41,7 @@ function StarRating({ rating, size = 14 }) {
 }
 
 export default function ProductDetailPage() {
+  const { isMobile } = useResponsive();
   const { products: PRODUCTS } = useProducts();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -99,10 +101,10 @@ export default function ProductDetailPage() {
         </div>
       </nav>
 
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "40px 40px" }}>
 
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "20px 16px" : "40px 40px" }}>
         {/* ── TOP: IMAGE + INFO ── */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, marginBottom: 64, animation: "fadeUp 0.5s ease" }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 24 : 56, marginBottom: 64, animation: "fadeUp 0.5s ease" }}>
 
           {/* LEFT — Images */}
           <div>
@@ -301,7 +303,7 @@ export default function ProductDetailPage() {
               <p style={{ fontSize: 12, color: "#f59e0b", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", fontFamily: "'Sora', sans-serif" }}>You may also like</p>
               <h2 style={{ fontSize: 26, fontWeight: 800, color: "#fff", fontFamily: "'Sora', sans-serif" }}>Related Products</h2>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: isMobile ? 12 : 20 }}>
               {related.map(p => (
                 <div key={p.id} className="related-card" onClick={() => { navigate(`/products/${p.id}`); window.scrollTo(0, 0); }}
                   style={{ background: "#111", border: "1px solid #1f1f1f", borderRadius: 14, overflow: "hidden" }}>
