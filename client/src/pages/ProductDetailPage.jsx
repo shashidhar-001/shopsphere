@@ -4,6 +4,8 @@ import { useCart } from "../context/CartContext";
 import { useProducts } from "../context/ProductContext";
 import { useEffect } from "react";
 import { useResponsive } from "../hooks/useResponsive";
+import { useWishlist } from '../context/WishlistContext'
+
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
@@ -50,7 +52,8 @@ export default function ProductDetailPage() {
   const { addToCart } = useCart();
   const [activeImg, setActiveImg] = useState(0);
   const [qty, setQty] = useState(1);
-  const [wished, setWished] = useState(false);
+  const { toggleWishlist, isWishlisted } = useWishlist();
+  const wished = isWishlisted(product.id);
   const [addedToCart, setAddedToCart] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
 
@@ -119,7 +122,7 @@ export default function ProductDetailPage() {
                 -{discount}% OFF
               </div>
               {/* Wishlist */}
-              <button onClick={() => setWished(w => !w)}
+              <button onClick={() => toggleWishlist(product.id)}
                 style={{ position: "absolute", top: 16, right: 16, width: 40, height: 40, borderRadius: "50%", background: "#0a0a0aaa", border: "1px solid #333", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill={wished ? "#ef4444" : "none"} stroke={wished ? "#ef4444" : "#888"} strokeWidth="2">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />

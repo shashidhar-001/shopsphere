@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useResponsive } from "../hooks/useResponsive";
 import { CATEGORIES } from "../data/products";
 import { useProducts } from "../context/ProductContext";
+import { useWishlist } from '../context/WishlistContext'
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
@@ -32,7 +33,8 @@ function StarRating({ rating }) {
 
 function ProductCard({ product, index }) {
   const navigate = useNavigate();
-  const [wished, setWished] = useState(false);
+  const { toggleWishlist, isWishlisted } = useWishlist();
+  const wished = isWishlisted(product.id);
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
   return (
@@ -48,7 +50,7 @@ function ProductCard({ product, index }) {
         />
         <div style={{ position: "absolute", top: 10, left: 10, background: "#f59e0b", color: "#000", fontSize: 10, fontWeight: 800, padding: "3px 10px", borderRadius: 20 }}>{product.badge}</div>
         <div style={{ position: "absolute", top: 10, right: 10, background: "#0a0a0a99", borderRadius: "50%", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", border: "1px solid #333" }}
-          onClick={e => { e.stopPropagation(); setWished(w => !w); }}>
+          onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill={wished ? "#ef4444" : "none"} stroke={wished ? "#ef4444" : "#888"} strokeWidth="2">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
