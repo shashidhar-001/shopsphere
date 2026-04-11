@@ -12,6 +12,8 @@ import { ProductProvider } from './context/ProductContext'  // ← ADD
 import OrdersPage from './pages/OrdersPage'   // ← ADD
 import { WishlistProvider } from './context/WishlistContext'
 import WishlistPage from './pages/WishlistPage'
+import ProfilePage  from './pages/ProfilePage'   // already there
+import SettingsPage from './pages/SettingsPage'  // ← ADD
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/orders" element={<OrdersPage />} />
                 <Route path="/wishlist" element={<WishlistPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/profile" element={<ProfilePage/>} />
               </Routes>
             </BrowserRouter>
           </WishlistProvider>
