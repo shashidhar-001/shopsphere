@@ -118,13 +118,13 @@ function OrderDetail({ order, onClose }) {
                     <p style={{ fontSize: 13, color: "#e5e7eb", fontWeight: 600, lineHeight: 1.4 }}>{item.name}</p>
                     <p style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>Qty: {item.qty}</p>
                   </div>
-                  <span style={{ fontSize: 14, color: "#f59e0b", fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>${(item.price * item.qty).toFixed(2)}</span>
+                  <span style={{ fontSize: 14, color: "#f59e0b", fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>₹{(item.price * item.qty).toFixed(2)}</span>
                 </div>
               ))}
             </div>
             <div style={{ borderTop: "1px solid #1a1a1a", marginTop: 16, paddingTop: 14, display: "flex", justifyContent: "space-between" }}>
               <span style={{ fontSize: 15, fontWeight: 800, color: "#fff", fontFamily: "'Sora', sans-serif" }}>Total</span>
-              <span style={{ fontSize: 18, fontWeight: 800, color: "#f59e0b", fontFamily: "'Sora', sans-serif" }}>${Number(order.total).toFixed(2)}</span>
+              <span style={{ fontSize: 18, fontWeight: 800, color: "#f59e0b", fontFamily: "'Sora', sans-serif" }}>₹{Number(order.total).toFixed(2)}</span>
             </div>
           </div>
 
@@ -278,7 +278,7 @@ export default function OrdersPage() {
             <div>
               <h1 style={{ fontSize: 28, fontWeight: 800, color: "#fff", fontFamily: "'Sora', sans-serif" }}>My Orders</h1>
               <p style={{ fontSize: 13, color: "#6b7280", marginTop: 2 }}>
-                {user?.user_metadata?.full_name || "Your"}'s order history
+                {user?.user_metadata?.full_name || "Your"}'s order  
               </p>
             </div>
           </div>
@@ -360,7 +360,7 @@ export default function OrdersPage() {
                           <p style={{ fontSize: 12, color: "#6b7280" }}>Placed on {order.date}</p>
                         </div>
                         <div style={{ textAlign: "right" }}>
-                          <p style={{ fontSize: 20, fontWeight: 800, color: "#f59e0b", fontFamily: "'Sora', sans-serif" }}>${Number(order.total).toFixed(2)}</p>
+                          <p style={{ fontSize: 20, fontWeight: 800, color: "#f59e0b", fontFamily: "'Sora', sans-serif" }}>₹{Number(order.total).toFixed(2)}</p>
                           <p style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>{order.items.length} item{order.items.length > 1 ? "s" : ""}</p>
                         </div>
                       </div>
