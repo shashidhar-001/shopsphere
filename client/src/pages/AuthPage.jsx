@@ -149,8 +149,13 @@ function LoginForm({ onSwitch }) {
             const { error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) throw error;
             showToast("Welcome back! 🎉", "success")
-            setTimeout(() => navigate('/'), 1200)
-            
+            setTimeout(() => {
+                // Redirect back to where user came from
+                const redirect = sessionStorage.getItem("redirectAfterLogin") || "/"
+                sessionStorage.removeItem("redirectAfterLogin")
+                navigate(redirect)
+            }, 1200)
+
         } catch (err) {
             showToast(err.message || "Login failed.");
         } finally {

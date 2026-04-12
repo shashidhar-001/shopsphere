@@ -4,6 +4,9 @@ import { useResponsive } from "../hooks/useResponsive";
 import { CATEGORIES } from "../data/products";
 import { useProducts } from "../context/ProductContext";
 import { useWishlist } from '../context/WishlistContext'
+import { useCart } from '../context/CartContext'
+import { useAuthGuard } from "../hooks/useAuthGuard";
+import AuthModal from "../components/AuthModal";
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
@@ -34,8 +37,11 @@ function StarRating({ rating }) {
 function ProductCard({ product, index }) {
   const navigate = useNavigate();
   const { toggleWishlist, isWishlisted } = useWishlist();
+  const { addToCart } = useCart();
   const wished = isWishlisted(product.id);
+  const [addedToCart, setAddedToCart] = useState(false);
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+  const { guard, showModal, modalMsg, closeModal } = useAuthGuard();
 
   return (
     <div
@@ -50,7 +56,10 @@ function ProductCard({ product, index }) {
         />
         <div style={{ position: "absolute", top: 10, left: 10, background: "#f59e0b", color: "#000", fontSize: 10, fontWeight: 800, padding: "3px 10px", borderRadius: 20 }}>{product.badge}</div>
         <div style={{ position: "absolute", top: 10, right: 10, background: "#0a0a0a99", borderRadius: "50%", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", border: "1px solid #333" }}
-          onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }}>
+          onClick={(e) => {
+            e.stopPropagation();
+            guard(() => toggleWishlist(product.id), "Sign in to save items to your wishlist.");
+          }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill={wished ? "#ef4444" : "none"} stroke={wished ? "#ef4444" : "#888"} strokeWidth="2">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
@@ -62,7 +71,7 @@ function ProductCard({ product, index }) {
         <h3 style={{ fontSize: 13, color: "#e5e7eb", fontWeight: 600, lineHeight: 1.4, marginBottom: 6, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{product.name}</h3>
         <StarRating rating={product.rating} />
         <p style={{ fontSize: 11, color: "#4b5563", marginTop: 2, marginBottom: 8 }}>{product.reviews.toLocaleString()} reviews</p>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ fontSize: 17, color: "#f59e0b", fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>₹{product.price}</span>
             <span style={{ fontSize: 12, color: "#374151", textDecoration: "line-through" }}>₹{product.originalPrice}</span>
@@ -71,7 +80,31 @@ function ProductCard({ product, index }) {
             {product.stock < 10 ? `Only ${product.stock} left!` : "In Stock"}
           </span>
         </div>
+
+        {/* Add to Cart button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            guard(() => {
+              addToCart(product, 1);
+              setAddedToCart(true);
+              setTimeout(() => setAddedToCart(false), 1500);
+            }, "Sign in to add items to your cart.");
+          }}
+          style={{
+            width: "100%", padding: "10px",
+            background: addedToCart ? "#10b981" : "#f59e0b",
+            color: addedToCart ? "#fff" : "#000",
+            border: "none", borderRadius: 10, fontSize: 13,
+            fontWeight: 700, cursor: "pointer", transition: "all 0.2s",
+            fontFamily: "'Sora', sans-serif",
+          }}
+        >
+          {addedToCart ? "✓ Added!" : "Add to Cart"}
+        </button>
       </div>
+
+      {showModal && <AuthModal message={modalMsg} onClose={closeModal} />}
     </div>
   );
 }

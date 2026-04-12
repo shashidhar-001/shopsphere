@@ -5,7 +5,8 @@ import { useProducts } from "../context/ProductContext";
 import { useEffect } from "react";
 import { useResponsive } from "../hooks/useResponsive";
 import { useWishlist } from '../context/WishlistContext'
-
+import { useAuthGuard } from "../hooks/useAuthGuard";
+import AuthModal from "../components/AuthModal";
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
@@ -56,6 +57,7 @@ export default function ProductDetailPage() {
   const wished = isWishlisted(product.id);
   const [addedToCart, setAddedToCart] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
+  const { guard, showModal, modalMsg, closeModal } = useAuthGuard();
 
   if (!product) return (
     <div style={{ background: "#0a0a0a", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
@@ -71,9 +73,11 @@ export default function ProductDetailPage() {
   const related = PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
 
   const handleAddToCart = () => {
-    addToCart(product, qty);
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
+    guard(() => {
+      addToCart(product, qty);
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
+    }, "Sign in to add items to your cart.");
   };
 
   useEffect(() => {
@@ -122,7 +126,7 @@ export default function ProductDetailPage() {
                 -{discount}% OFF
               </div>
               {/* Wishlist */}
-              <button onClick={() => toggleWishlist(product.id)}
+              <button onClick={() => guard(() => toggleWishlist(product.id), "Sign in to save items to your wishlist.")}
                 style={{ position: "absolute", top: 16, right: 16, width: 40, height: 40, borderRadius: "50%", background: "#0a0a0aaa", border: "1px solid #333", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill={wished ? "#ef4444" : "none"} stroke={wished ? "#ef4444" : "#888"} strokeWidth="2">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -212,7 +216,9 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Buy Now */}
-            <button style={{ width: "100%", height: 50, background: "transparent", color: "#e5e7eb", border: "1px solid #2a2a2a", borderRadius: 12, fontSize: 15, fontWeight: 700, cursor: "pointer", transition: "all 0.2s", fontFamily: "'Sora', sans-serif" }}
+            <button
+              onClick={() => guard(() => navigate('/cart'), "Sign in to purchase items.")}
+              style={{ width: "100%", height: 50, background: "transparent", color: "#e5e7eb", border: "1px solid #2a2a2a", borderRadius: 12, fontSize: 15, fontWeight: 700, cursor: "pointer", transition: "all 0.2s", fontFamily: "'Sora', sans-serif" }}
               onMouseEnter={e => { e.target.style.borderColor = "#f59e0b"; e.target.style.color = "#f59e0b"; }}
               onMouseLeave={e => { e.target.style.borderColor = "#2a2a2a"; e.target.style.color = "#e5e7eb"; }}>
               Buy Now
@@ -327,6 +333,7 @@ export default function ProductDetailPage() {
           </div>
         )}
       </div>
+      {showModal && <AuthModal message={modalMsg} onClose={closeModal} />}
     </div>
   );
 }
