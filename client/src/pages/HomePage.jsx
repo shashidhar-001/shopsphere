@@ -4,7 +4,8 @@ import { useAuth } from '../context/AuthContext'
 import { useResponsive } from '../hooks/useResponsive'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
-
+import { useAuthGuard } from '../hooks/useAuthGuard'
+import AuthModal from '../components/AuthModal'
 
 const products = [
   { id: 1, name: "Wireless Noise-Cancelling Headphones", price: 299.99, originalPrice: 399.99, rating: 4.8, reviews: 2341, badge: "Best Seller", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80", category: "Electronics" },
@@ -47,14 +48,19 @@ function StarRating({ rating }) {
 
 function ProductCard({ product, index }) {
   const navigate = useNavigate();
+  const { addToCart } = useCart();
   const { toggleWishlist, isWishlisted } = useWishlist();
+  const { guard, showModal, modalMsg, closeModal } = useAuthGuard();
   const wished = isWishlisted(product.id);
   const [addedToCart, setAddedToCart] = useState(false);
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
   const handleCart = () => {
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 1500);
+    guard(() => {
+      addToCart(product, 1);
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 1500);
+    }, "Sign in to add items to your cart.");
   };
 
   return (
@@ -79,7 +85,10 @@ function ProductCard({ product, index }) {
         />
         <div style={{ position: "absolute", top: 10, left: 10, background: "#f59e0b", color: "#000", fontSize: 10, fontWeight: 800, padding: "3px 10px", borderRadius: 20, letterSpacing: 0.5 }}>{product.badge}</div>
         <div style={{ position: "absolute", top: 10, right: 10, background: "#1a1a1a", borderRadius: "50%", width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", border: "1px solid #333", transition: "all 0.2s" }}
-          onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }}>
+          onClick={(e) => {
+            e.stopPropagation();
+            guard(() => toggleWishlist(product.id), "Sign in to save items to your wishlist.");
+          }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill={wished ? "#ef4444" : "none"} stroke={wished ? "#ef4444" : "#888"} strokeWidth="2">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
@@ -103,6 +112,7 @@ function ProductCard({ product, index }) {
           {addedToCart ? "✓ Added!" : "Add to Cart"}
         </button>
       </div>
+      {showModal && <AuthModal message={modalMsg} onClose={closeModal} />}
     </div>
   );
 }
