@@ -13,9 +13,9 @@ router.post('/save', authenticate, async (req, res) => {
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert({
-        user_id:          req.user.id,
-        status:           'pending',
-        total:            total,
+        user_id: req.user.id,
+        status: 'pending',
+        total: total,
         shipping_address: shippingAddress,
         payment_intent_id: paymentIntentId,
       })
@@ -26,10 +26,10 @@ router.post('/save', authenticate, async (req, res) => {
 
     // 2. Save each order item
     const orderItems = items.map(item => ({
-      order_id:   order.id,
+      order_id: order.id,
       product_id: item.id,
-      quantity:   item.qty,
-      price:      item.price,
+      quantity: item.qty,
+      price: item.price,
     }))
 
     const { error: itemsError } = await supabase
@@ -122,14 +122,32 @@ router.get('/', authenticate, adminGuard, async (req, res) => {
       .from('orders')
       .select(`
         *,
-        profiles (full_name),
         order_items (quantity, price)
       `)
       .order('created_at', { ascending: false })
 
     if (error) throw error
 
-    res.json({ orders })
+    const userIds = [...new Set((orders || []).map(order => order.user_id).filter(Boolean))]
+    let profiles = []
+
+    if (userIds.length > 0) {
+      const { data, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .in('id', userIds)
+
+      if (profilesError) throw profilesError
+      profiles = data || []
+    }
+
+    const profileMap = new Map(profiles.map(profile => [profile.id, profile]))
+    const ordersWithProfiles = (orders || []).map(order => ({
+      ...order,
+      profiles: profileMap.get(order.user_id) || null,
+    }))
+
+    res.json({ orders: ordersWithProfiles })
   } catch (err) {
     console.error('Admin fetch orders error:', err)
     res.status(500).json({ error: err.message })

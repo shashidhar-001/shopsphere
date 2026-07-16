@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useProducts } from "../context/ProductContext";
+import { supabase } from "../supabase";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
@@ -30,17 +33,6 @@ const STYLES = `
   .admin-input:focus { border-color: #f59e0b; }
   .admin-input::placeholder { color: #4b5563; }
 `;
-
-// ── Dummy orders data ─────────────────────────────────────────────────────────
-const DUMMY_ORDERS = [
-  { id: "ORD-001", customer: "Alex Johnson", email: "alex@gmail.com", items: 3, total: 589.97, status: "delivered", date: "Mar 15, 2025" },
-  { id: "ORD-002", customer: "Sarah Kim", email: "sarah@gmail.com", items: 1, total: 299.99, status: "shipped", date: "Mar 16, 2025" },
-  { id: "ORD-003", customer: "James Roy", email: "james@gmail.com", items: 2, total: 219.98, status: "pending", date: "Mar 17, 2025" },
-  { id: "ORD-004", customer: "Priya Singh", email: "priya@gmail.com", items: 4, total: 749.96, status: "delivered", date: "Mar 14, 2025" },
-  { id: "ORD-005", customer: "Mike Chen", email: "mike@gmail.com", items: 1, total: 549.99, status: "cancelled", date: "Mar 13, 2025" },
-  { id: "ORD-006", customer: "Emma Davis", email: "emma@gmail.com", items: 2, total: 389.98, status: "shipped", date: "Mar 17, 2025" },
-  { id: "ORD-007", customer: "Raj Patel", email: "raj@gmail.com", items: 3, total: 459.97, status: "pending", date: "Mar 18, 2025" },
-];
 
 // ── Status badge ──────────────────────────────────────────────────────────────
 function StatusBadge({ status }) {
@@ -121,15 +113,20 @@ function Sidebar({ active, setActive, navigate }) {
 }
 
 // ── OVERVIEW TAB ──────────────────────────────────────────────────────────────
-function OverviewTab() {
+function OverviewTab({ orders, loading, error }) {
+  const totalRevenue = orders.reduce((sum, order) => sum + (order.total || 0), 0);
+  const totalOrders = orders.length;
+  const customerCount = new Set(orders.map(order => order.profiles?.id || order.user_id || order.id)).size;
+  const cancelledCount = orders.filter(order => order.status === "cancelled").length;
+
   const stats = [
-    { label: "Total Revenue", value: "$48,290", change: "+12.5%", up: true, icon: "💰", color: "#f59e0b" },
-    { label: "Total Orders", value: "1,284", change: "+8.2%", up: true, icon: "📦", color: "#3b82f6" },
-    { label: "Total Customers", value: "3,847", change: "+15.1%", up: true, icon: "👥", color: "#10b981" },
-    { label: "Cancelled", value: "23", change: "-4.3%", up: false, icon: "❌", color: "#ef4444" },
+    { label: "Total Revenue", value: `₹${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, change: "—", up: true, icon: "💰", color: "#f59e0b" },
+    { label: "Total Orders", value: totalOrders.toString(), change: "—", up: true, icon: "📦", color: "#3b82f6" },
+    { label: "Total Customers", value: customerCount.toString(), change: "—", up: true, icon: "👥", color: "#10b981" },
+    { label: "Cancelled", value: cancelledCount.toString(), change: "—", up: false, icon: "❌", color: "#ef4444" },
   ];
 
-  const recentOrders = DUMMY_ORDERS.slice(0, 5);
+  const recentOrders = orders.slice(0, 5);
 
   return (
     <div style={{ animation: "fadeUp 0.4s ease" }}>
@@ -137,53 +134,64 @@ function OverviewTab() {
         <h1 style={{ fontSize: 26, fontWeight: 800, color: "#fff", fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>Dashboard Overview</h1>
         <p style={{ fontSize: 14, color: "#6b7280" }}>Welcome back! Here's what's happening today.</p>
       </div>
-
-      {/* Stat cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
-        {stats.map((s, i) => (
-          <div key={s.label} className="stat-card"
-            style={{ background: "#111", border: "1px solid #1f1f1f", borderRadius: 16, padding: "20px", animation: `fadeUp 0.4s ease ${i * 0.08}s both` }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
-              <div style={{ width: 42, height: 42, borderRadius: 12, background: s.color + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>{s.icon}</div>
-              <span style={{ fontSize: 11, fontWeight: 700, color: s.up ? "#10b981" : "#ef4444", background: s.up ? "#10b98122" : "#ef444422", padding: "3px 8px", borderRadius: 6 }}>{s.change}</span>
-            </div>
-            <p style={{ fontSize: 26, fontWeight: 800, color: "#fff", fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>{s.value}</p>
-            <p style={{ fontSize: 12, color: "#6b7280" }}>{s.label}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Recent orders */}
-      <div style={{ background: "#111", border: "1px solid #1f1f1f", borderRadius: 16, overflow: "hidden" }}>
-        <div style={{ padding: "18px 24px", borderBottom: "1px solid #1a1a1a", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h3 style={{ fontSize: 16, fontWeight: 800, color: "#fff", fontFamily: "'Sora', sans-serif" }}>Recent Orders</h3>
-          <span style={{ fontSize: 12, color: "#f59e0b", fontWeight: 600, cursor: "pointer" }}>View all →</span>
-        </div>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr style={{ background: "#0d0d0d" }}>
-              {["Order ID", "Customer", "Items", "Total", "Status", "Date"].map(h => (
-                <th key={h} style={{ padding: "12px 24px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#6b7280", letterSpacing: 0.8, textTransform: "uppercase" }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {recentOrders.map((o, i) => (
-              <tr key={o.id} className="table-row" style={{ borderTop: "1px solid #1a1a1a", animationDelay: `${i * 0.05}s` }}>
-                <td style={{ padding: "14px 24px", fontSize: 13, color: "#f59e0b", fontWeight: 700 }}>{o.id}</td>
-                <td style={{ padding: "14px 24px" }}>
-                  <p style={{ fontSize: 13, color: "#e5e7eb", fontWeight: 600 }}>{o.customer}</p>
-                  <p style={{ fontSize: 11, color: "#6b7280" }}>{o.email}</p>
-                </td>
-                <td style={{ padding: "14px 24px", fontSize: 13, color: "#9ca3af" }}>{o.items} items</td>
-                <td style={{ padding: "14px 24px", fontSize: 14, color: "#f59e0b", fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>${o.total}</td>
-                <td style={{ padding: "14px 24px" }}><StatusBadge status={o.status} /></td>
-                <td style={{ padding: "14px 24px", fontSize: 12, color: "#6b7280" }}>{o.date}</td>
-              </tr>
+      {loading && (
+        <div style={{ color: "#9ca3af", padding: "24px 0" }}>Loading dashboard metrics...</div>
+      )}
+      {error && (
+        <div style={{ color: "#ef4444", padding: "24px 0" }}>{error}</div>
+      )}
+      {!loading && !error && (
+        <>
+          {/* Stat cards */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
+            {stats.map((s, i) => (
+              <div key={s.label} className="stat-card"
+                style={{ background: "#111", border: "1px solid #1f1f1f", borderRadius: 16, padding: "20px", animation: `fadeUp 0.4s ease ${i * 0.08}s both` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+                  <div style={{ width: 42, height: 42, borderRadius: 12, background: s.color + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>{s.icon}</div>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: s.up ? "#10b981" : "#ef4444", background: s.up ? "#10b98122" : "#ef444422", padding: "3px 8px", borderRadius: 6 }}>{s.change}</span>
+                </div>
+                <p style={{ fontSize: 26, fontWeight: 800, color: "#fff", fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>{s.value}</p>
+                <p style={{ fontSize: 12, color: "#6b7280" }}>{s.label}</p>
+              </div>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </div>
+
+          {/* Recent orders */}
+          <div style={{ background: "#111", border: "1px solid #1f1f1f", borderRadius: 16, overflow: "hidden" }}>
+            <div style={{ padding: "18px 24px", borderBottom: "1px solid #1a1a1a", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h3 style={{ fontSize: 16, fontWeight: 800, color: "#fff", fontFamily: "'Sora', sans-serif" }}>Recent Orders</h3>
+              <span style={{ fontSize: 12, color: "#f59e0b", fontWeight: 600, cursor: "pointer" }}>View all →</span>
+            </div>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ background: "#0d0d0d" }}>
+                  {['Order ID', 'Customer', 'Items', 'Total', 'Status', 'Date'].map(h => (
+                    <th key={h} style={{ padding: "12px 24px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#6b7280", letterSpacing: 0.8, textTransform: "uppercase" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {recentOrders.map((o, i) => (
+                  <tr key={o.id} className="table-row" style={{ borderTop: "1px solid #1a1a1a", animationDelay: `${i * 0.05}s` }}>
+                    <td style={{ padding: "14px 24px", fontSize: 13, color: "#f59e0b", fontWeight: 700 }}>{o.id}</td>
+                    <td style={{ padding: "14px 24px" }}>
+                      <p style={{ fontSize: 13, color: "#e5e7eb", fontWeight: 600 }}>{o.profiles?.full_name || "Unknown"}</p>
+                      <p style={{ fontSize: 11, color: "#6b7280" }}>—</p>
+                    </td>
+                    <td style={{ padding: "14px 24px", fontSize: 13, color: "#9ca3af" }}>{o.order_items?.reduce((sum, item) => sum + (item.quantity || 0), 0)} items</td>
+                    <td style={{ padding: "14px 24px", fontSize: 14, color: "#f59e0b", fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>₹{(o.total || 0).toFixed(2)}</td>
+                    <td style={{ padding: "14px 24px" }}><StatusBadge status={o.status} /></td>
+                    <td style={{ padding: "14px 24px", fontSize: 12, color: "#6b7280" }}>{o.created_at ? new Date(o.created_at).toLocaleDateString() : "-"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
+
     </div>
   );
 }
@@ -384,20 +392,16 @@ function ProductsTab() {
 }
 
 // ── ORDERS TAB ────────────────────────────────────────────────────────────────
-function OrdersTab() {
-  const [orders, setOrders] = useState(DUMMY_ORDERS);
+function OrdersTab({ orders = [], updateStatus }) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
 
   const filtered = orders.filter(o => {
-    const matchSearch = o.customer.toLowerCase().includes(search.toLowerCase()) || o.id.toLowerCase().includes(search.toLowerCase());
+    const customerName = o.profiles?.full_name || o.user_id || "Unknown";
+    const matchSearch = customerName.toLowerCase().includes(search.toLowerCase()) || (o.id || "").toLowerCase().includes(search.toLowerCase());
     const matchFilter = filter === "all" || o.status === filter;
     return matchSearch && matchFilter;
   });
-
-  const updateStatus = (id, status) => {
-    setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
-  };
 
   return (
     <div style={{ animation: "fadeUp 0.4s ease" }}>
@@ -531,6 +535,67 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user, role, loading } = useAuth();
   const [active, setActive] = useState("overview");
+  const [orders, setOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
+  const [ordersError, setOrdersError] = useState(null);
+
+  useEffect(() => {
+    const loadOrders = async () => {
+      setLoadingOrders(true);
+      setOrdersError(null);
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token;
+
+        if (!token) throw new Error("Unable to get admin session.");
+
+        const res = await fetch(`${API_URL}/api/orders`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.error || "Failed to fetch orders.");
+
+        setOrders(data.orders || []);
+      } catch (err) {
+        console.error("Fetch admin orders error:", err);
+        setOrdersError(err.message);
+      } finally {
+        setLoadingOrders(false);
+      }
+    };
+
+    loadOrders();
+  }, []);
+
+  const updateOrderStatus = async (orderId, status) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      if (!token) throw new Error("Unable to get admin session.");
+
+      const res = await fetch(`${API_URL}/api/orders/${orderId}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update order status.");
+
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: data.order.status } : o));
+      return { success: true };
+    } catch (err) {
+      console.error("Update order status error:", err);
+      return { success: false, error: err.message };
+    }
+  };
 
   // Block non-admins
   if (loading) return (
@@ -557,10 +622,10 @@ export default function AdminDashboard() {
       <style>{STYLES}</style>
       <Sidebar active={active} setActive={setActive} navigate={navigate} />
       <main style={{ flex: 1, padding: "36px 40px", overflowY: "auto" }}>
-        {active === "overview" && <OverviewTab />}
+        {active === "overview" && <OverviewTab orders={orders} loading={loadingOrders} error={ordersError} />}
         {active === "products" && <ProductsTab />}
-        {active === "orders" && <OrdersTab />}
-        {active === "customers" && <CustomersTab />}
+        {active === "orders" && <OrdersTab orders={orders} updateStatus={updateOrderStatus} />}
+        {active === "customers" && <CustomersTab orders={orders} />}
       </main>
     </div>
   );
