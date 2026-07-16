@@ -5,8 +5,8 @@ const WishlistContext = createContext();
 
 export function WishlistProvider({ children }) {
   const [wishlist, setWishlist] = useState([]); // array of product_ids (numbers)
-  const [userId, setUserId]     = useState(null);
-  const [loading, setLoading]   = useState(false);
+  const [userId, setUserId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // ── Listen for auth changes ─────────────────────────────────────────────────
   useEffect(() => {
@@ -36,15 +36,14 @@ export function WishlistProvider({ children }) {
       .eq("user_id", uid);
 
     if (!error && data) {
-      setWishlist(data.map(item => item.product_id));
+      setWishlist(data.map(item => String(item.product_id)));
     }
     setLoading(false);
   };
 
   // ── Toggle wishlist item ────────────────────────────────────────────────────
   const toggleWishlist = async (productId) => {
-    const isWished = wishlist.includes(productId);
-
+    const isWishlisted = (productId) => wishlist.includes(String(productId));
     // Update UI immediately (optimistic)
     setWishlist(prev =>
       isWished ? prev.filter(id => id !== productId) : [...prev, productId]
@@ -65,8 +64,8 @@ export function WishlistProvider({ children }) {
     }
   };
 
-  const isWishlisted   = (productId) => wishlist.includes(productId);
-  const wishlistCount  = wishlist.length;
+  const isWishlisted = (productId) => wishlist.includes(productId);
+  const wishlistCount = wishlist.length;
 
   const clearWishlist = async () => {
     setWishlist([]);

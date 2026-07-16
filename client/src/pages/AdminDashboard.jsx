@@ -207,9 +207,10 @@ function ProductsTab() {
     p.category.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleDelete = (id) => {
-    deleteProduct(id);
-    showToast("Product deleted successfully");
+  const handleDelete = async (id) => {
+    const result = await deleteProduct(id);
+    if (result.success) showToast("Product deleted successfully");
+    else showToast("Failed to delete: " + result.error, "error");
   };
 
   const handleEdit = (product) => {
@@ -218,18 +219,25 @@ function ProductsTab() {
     setShowAdd(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name || !form.price) return showToast("Please fill required fields", "error");
+    
+    let result;
     if (editId) {
-      updateProduct(editId, form);
-      showToast("Product updated successfully");
+      result = await updateProduct(editId, form);
+      if (result.success) showToast("Product updated successfully ✅");
+      else showToast("Failed to update: " + result.error, "error");
     } else {
-      addProduct(form);
-      showToast("Product added successfully");
+      result = await addProduct(form);
+      if (result.success) showToast("Product added successfully ✅");
+      else showToast("Failed to add: " + result.error, "error");
     }
-    setShowAdd(false);
-    setEditId(null);
-    setForm({ name: "", price: "", category: "", stock: "", badge: "", originalPrice: "", brand: "", description: "", image: "" });
+
+    if (result.success) {
+      setShowAdd(false);
+      setEditId(null);
+      setForm({ name: "", price: "", category: "", stock: "", badge: "", originalPrice: "", brand: "", description: "", image: "" });
+    }
   };
 
   return (

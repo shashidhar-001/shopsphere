@@ -1,12 +1,12 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "../supabase";
-import { PRODUCTS } from "../data/products";
+// import { PRODUCTS } from "../data/products";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const [cart, setCart]       = useState([]);
-  const [userId, setUserId]   = useState(null);
+  const [cart, setCart] = useState([]);
+  const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(false);
 
   // ── Listen for auth changes ─────────────────────────────────────────────────
@@ -47,7 +47,7 @@ export function CartProvider({ children }) {
 
     const items = data
       .map(row => {
-        const product = PRODUCTS.find(p => p.id === row.product_id);
+        const product = PRODUCTS.find(p => String(p.id) === String(row.product_id));
         if (!product) return null;
         return { ...product, qty: row.quantity };
       })
@@ -141,9 +141,9 @@ export function CartProvider({ children }) {
   };
 
   // ── Computed values ─────────────────────────────────────────────────────────
-  const cartCount    = cart.reduce((sum, item) => sum + item.qty, 0);
+  const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
   const cartSubtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-  const cartSavings  = cart.reduce((sum, item) => sum + (item.originalPrice - item.price) * item.qty, 0);
+  const cartSavings = cart.reduce((sum, item) => sum + (item.originalPrice - item.price) * item.qty, 0);
 
   return (
     <CartContext.Provider value={{

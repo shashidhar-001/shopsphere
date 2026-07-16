@@ -48,7 +48,7 @@ export default function ProductDetailPage() {
   const { products: PRODUCTS } = useProducts();
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = PRODUCTS.find(p => p.id === Number(id));
+  const product = PRODUCTS.find(p => String(p.id) === String(id));
 
   const { addToCart } = useCart();
   const [activeImg, setActiveImg] = useState(0);

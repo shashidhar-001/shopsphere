@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabase";
-import { PRODUCTS } from "../data/products";
+// import { PRODUCTS } from "../data/products";
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
@@ -22,30 +22,30 @@ const STYLES = `
 
 // ── Status config ─────────────────────────────────────────────────────────────
 const STATUS = {
-  delivered: { color: "#10b981", bg: "#10b98118", label: "Delivered",  icon: "✅" },
-  shipped:   { color: "#3b82f6", bg: "#3b82f618", label: "Shipped",    icon: "🚚" },
-  pending:   { color: "#f59e0b", bg: "#f59e0b18", label: "Pending",    icon: "⏳" },
-  cancelled: { color: "#ef4444", bg: "#ef444418", label: "Cancelled",  icon: "❌" },
+  delivered: { color: "#10b981", bg: "#10b98118", label: "Delivered", icon: "✅" },
+  shipped: { color: "#3b82f6", bg: "#3b82f618", label: "Shipped", icon: "🚚" },
+  pending: { color: "#f59e0b", bg: "#f59e0b18", label: "Pending", icon: "⏳" },
+  cancelled: { color: "#ef4444", bg: "#ef444418", label: "Cancelled", icon: "❌" },
 };
 
 // ── Generate timeline ─────────────────────────────────────────────────────────
 function getTimeline(status, createdAt) {
   const date = new Date(createdAt);
-  const fmt  = (d) => d.toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  const fmt = (d) => d.toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 
   if (status === "cancelled") return [
-    { label: "Order Placed",     date: fmt(date),                                          done: true },
-    { label: "Cancelled",        date: fmt(new Date(date.getTime() + 30 * 60000)),         done: true },
-    { label: "Refund Initiated", date: fmt(new Date(date.getTime() + 60 * 60000)),         done: true },
+    { label: "Order Placed", date: fmt(date), done: true },
+    { label: "Cancelled", date: fmt(new Date(date.getTime() + 30 * 60000)), done: true },
+    { label: "Refund Initiated", date: fmt(new Date(date.getTime() + 60 * 60000)), done: true },
   ];
 
   return [
-    { label: "Order Placed",      date: fmt(date),                                                                              done: true },
-    { label: "Payment Confirmed", date: fmt(new Date(date.getTime() + 5 * 60000)),                                              done: true },
-    { label: "Packed",            date: status !== "pending"   ? fmt(new Date(date.getTime() + 3600000))   : "Pending",         done: status !== "pending" },
-    { label: "Shipped",           date: status === "shipped" || status === "delivered" ? fmt(new Date(date.getTime() + 86400000)) : "Pending", done: status === "shipped" || status === "delivered" },
-    { label: "Out for Delivery",  date: status === "delivered" ? fmt(new Date(date.getTime() + 172800000)) : "Pending",         done: status === "delivered" },
-    { label: "Delivered",         date: status === "delivered" ? fmt(new Date(date.getTime() + 180000000)) : "Pending",         done: status === "delivered" },
+    { label: "Order Placed", date: fmt(date), done: true },
+    { label: "Payment Confirmed", date: fmt(new Date(date.getTime() + 5 * 60000)), done: true },
+    { label: "Packed", date: status !== "pending" ? fmt(new Date(date.getTime() + 3600000)) : "Pending", done: status !== "pending" },
+    { label: "Shipped", date: status === "shipped" || status === "delivered" ? fmt(new Date(date.getTime() + 86400000)) : "Pending", done: status === "shipped" || status === "delivered" },
+    { label: "Out for Delivery", date: status === "delivered" ? fmt(new Date(date.getTime() + 172800000)) : "Pending", done: status === "delivered" },
+    { label: "Delivered", date: status === "delivered" ? fmt(new Date(date.getTime() + 180000000)) : "Pending", done: status === "delivered" },
   ];
 }
 
@@ -77,9 +77,9 @@ function OrderDetail({ order, onClose }) {
               <p style={{ fontSize: 15, fontWeight: 800, color: s.color, fontFamily: "'Sora', sans-serif" }}>{s.label}</p>
               <p style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>
                 {order.status === "delivered" ? "Your order has been delivered!" :
-                 order.status === "shipped"   ? "Your order is on the way!" :
-                 order.status === "pending"   ? "Your order is being processed." :
-                 "This order was cancelled."}
+                  order.status === "shipped" ? "Your order is on the way!" :
+                    order.status === "pending" ? "Your order is being processed." :
+                      "This order was cancelled."}
               </p>
             </div>
           </div>
@@ -156,8 +156,8 @@ function OrderDetail({ order, onClose }) {
           )}
           {(order.status === "delivered" || order.status === "cancelled") && (
             <button style={{ width: "100%", padding: "13px", background: "transparent", color: "#9ca3af", border: "1px solid #222", borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all 0.2s" }}
-              onMouseEnter={e => { e.target.style.borderColor="#f59e0b"; e.target.style.color="#f59e0b"; }}
-              onMouseLeave={e => { e.target.style.borderColor="#222"; e.target.style.color="#9ca3af"; }}>
+              onMouseEnter={e => { e.target.style.borderColor = "#f59e0b"; e.target.style.color = "#f59e0b"; }}
+              onMouseLeave={e => { e.target.style.borderColor = "#222"; e.target.style.color = "#9ca3af"; }}>
               🔄 Buy Again
             </button>
           )}
@@ -170,13 +170,13 @@ function OrderDetail({ order, onClose }) {
 // ── MAIN ORDERS PAGE ──────────────────────────────────────────────────────────
 export default function OrdersPage() {
   const navigate = useNavigate();
-  const { user }  = useAuth();
+  const { user } = useAuth();
 
-  const [filter, setFilter]          = useState("all");
+  const [filter, setFilter] = useState("all");
   const [selectedOrder, setSelected] = useState(null);
-  const [orders, setOrders]          = useState([]);
-  const [loading, setLoading]        = useState(true);
-  const [error, setError]            = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (user) fetchOrders();
@@ -189,29 +189,29 @@ export default function OrdersPage() {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
 
-      const res  = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/my-orders`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/my-orders`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
       const formatted = data.orders.map(order => ({
-        id:       order.id.slice(0, 8).toUpperCase(),
-        fullId:   order.id,
-        date:     new Date(order.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-        status:   order.status,
-        total:    order.total,
-        items:    (order.order_items || []).map(item => {
-          const product = PRODUCTS.find(p => p.id === item.product_id);
+        id: order.id.slice(0, 8).toUpperCase(),
+        fullId: order.id,
+        date: new Date(order.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+        status: order.status,
+        total: order.total,
+        items: (order.order_items || []).map(item => {
+          const product = PRODUCTS.find(p => String(p.id) === String(item.product_id));
           return {
-            name:  product?.name     || "Product",
+            name: product?.name || "Product",
             price: item.price,
-            qty:   item.quantity,
-            img:   product?.images?.[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&q=80",
+            qty: item.quantity,
+            img: product?.images?.[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&q=80",
           };
         }),
         shipping: order.shipping_address || {},
-        payment:  order.payment_intent_id
+        payment: order.payment_intent_id
           ? `Payment ID: ${order.payment_intent_id.slice(0, 12)}...`
           : "Cash on Delivery",
         timeline: getTimeline(order.status, order.created_at),
@@ -257,14 +257,14 @@ export default function OrdersPage() {
           <span style={{ fontSize: 18, fontWeight: 800, color: "#fff", fontFamily: "'Sora', sans-serif" }}>Shop<span style={{ color: "#f59e0b" }}>Sphere</span></span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#6b7280", marginLeft: 16 }}>
-          <span onClick={() => navigate("/")} style={{ cursor: "pointer" }} onMouseEnter={e => e.target.style.color="#f59e0b"} onMouseLeave={e => e.target.style.color="#6b7280"}>Home</span>
+          <span onClick={() => navigate("/")} style={{ cursor: "pointer" }} onMouseEnter={e => e.target.style.color = "#f59e0b"} onMouseLeave={e => e.target.style.color = "#6b7280"}>Home</span>
           <span>›</span>
           <span style={{ color: "#e5e7eb" }}>My Orders</span>
         </div>
         <button onClick={() => navigate("/products")}
           style={{ marginLeft: "auto", background: "transparent", border: "1px solid #222", borderRadius: 10, padding: "8px 16px", color: "#9ca3af", fontSize: 13, cursor: "pointer", fontWeight: 600, transition: "all 0.2s" }}
-          onMouseEnter={e => { e.target.style.borderColor="#f59e0b"; e.target.style.color="#f59e0b"; }}
-          onMouseLeave={e => { e.target.style.borderColor="#222"; e.target.style.color="#9ca3af"; }}>
+          onMouseEnter={e => { e.target.style.borderColor = "#f59e0b"; e.target.style.color = "#f59e0b"; }}
+          onMouseLeave={e => { e.target.style.borderColor = "#222"; e.target.style.color = "#9ca3af"; }}>
           Continue Shopping →
         </button>
       </nav>
@@ -278,7 +278,7 @@ export default function OrdersPage() {
             <div>
               <h1 style={{ fontSize: 28, fontWeight: 800, color: "#fff", fontFamily: "'Sora', sans-serif" }}>My Orders</h1>
               <p style={{ fontSize: 13, color: "#6b7280", marginTop: 2 }}>
-                {user?.user_metadata?.full_name || "Your"}'s order  
+                {user?.user_metadata?.full_name || "Your"}'s order
               </p>
             </div>
           </div>
@@ -287,11 +287,11 @@ export default function OrdersPage() {
         {/* Filter tabs */}
         <div style={{ display: "flex", gap: 8, marginBottom: 28, flexWrap: "wrap" }}>
           {[
-            { id: "all",       label: "All Orders", count: orders.length },
-            { id: "pending",   label: "Pending",    count: orders.filter(o => o.status === "pending").length   },
-            { id: "shipped",   label: "Shipped",    count: orders.filter(o => o.status === "shipped").length   },
-            { id: "delivered", label: "Delivered",  count: orders.filter(o => o.status === "delivered").length },
-            { id: "cancelled", label: "Cancelled",  count: orders.filter(o => o.status === "cancelled").length },
+            { id: "all", label: "All Orders", count: orders.length },
+            { id: "pending", label: "Pending", count: orders.filter(o => o.status === "pending").length },
+            { id: "shipped", label: "Shipped", count: orders.filter(o => o.status === "shipped").length },
+            { id: "delivered", label: "Delivered", count: orders.filter(o => o.status === "delivered").length },
+            { id: "cancelled", label: "Cancelled", count: orders.filter(o => o.status === "cancelled").length },
           ].map(tab => (
             <button key={tab.id} className="filter-tab" onClick={() => setFilter(tab.id)}
               style={{ padding: "8px 16px", borderRadius: 20, border: `1px solid ${filter === tab.id ? "#f59e0b" : "#222"}`, background: filter === tab.id ? "#f59e0b18" : "transparent", color: filter === tab.id ? "#f59e0b" : "#6b7280", fontSize: 13, fontWeight: filter === tab.id ? 700 : 500, display: "flex", alignItems: "center", gap: 6 }}>
@@ -399,8 +399,10 @@ export default function OrdersPage() {
                             })}
                           </div>
                           <div style={{ height: 3, background: "#1f1f1f", borderRadius: 2, position: "relative", marginTop: 2 }}>
-                            <div style={{ position: "absolute", left: 0, top: 0, height: "100%", borderRadius: 2, background: "#f59e0b", transition: "width 0.5s ease",
-                              width: order.status === "delivered" ? "100%" : order.status === "shipped" ? "66%" : order.status === "pending" ? "16%" : "0%" }} />
+                            <div style={{
+                              position: "absolute", left: 0, top: 0, height: "100%", borderRadius: 2, background: "#f59e0b", transition: "width 0.5s ease",
+                              width: order.status === "delivered" ? "100%" : order.status === "shipped" ? "66%" : order.status === "pending" ? "16%" : "0%"
+                            }} />
                           </div>
                         </div>
                       )}
