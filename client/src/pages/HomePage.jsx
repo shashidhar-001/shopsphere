@@ -4,19 +4,9 @@ import { useAuth } from '../context/AuthContext'
 import { useResponsive } from '../hooks/useResponsive'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
+import { useProducts } from '../context/ProductContext'
 import { useAuthGuard } from '../hooks/useAuthGuard'
 import AuthModal from '../components/AuthModal'
-
-const products = [
-  { id: 1, name: "Wireless Noise-Cancelling Headphones", price: 299.99, originalPrice: 399.99, rating: 4.8, reviews: 2341, badge: "Best Seller", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80", category: "Electronics" },
-  { id: 2, name: "Minimalist Leather Watch", price: 189.99, originalPrice: 249.99, rating: 4.6, reviews: 876, badge: "New", img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80", category: "Fashion" },
-  { id: 3, name: "4K Ultra HD Smart Camera", price: 549.99, originalPrice: 699.99, rating: 4.9, reviews: 1203, badge: "Top Rated", img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80", category: "Electronics" },
-  { id: 4, name: "Ergonomic Office Chair", price: 449.99, originalPrice: 599.99, rating: 4.7, reviews: 654, badge: "Deal", img: "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=400&q=80", category: "Home" },
-  { id: 5, name: "Running Shoes Pro X", price: 129.99, originalPrice: 179.99, rating: 4.5, reviews: 3421, badge: "Best Seller", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80", category: "Sports" },
-  { id: 6, name: "Portable Bluetooth Speaker", price: 89.99, originalPrice: 129.99, rating: 4.4, reviews: 987, badge: "Sale", img: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&q=80", category: "Electronics" },
-  { id: 7, name: "Stainless Steel Water Bottle", price: 34.99, originalPrice: 49.99, rating: 4.8, reviews: 5670, badge: "Popular", img: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&q=80", category: "Sports" },
-  { id: 8, name: "Premium Skincare Set", price: 79.99, originalPrice: 110.00, rating: 4.6, reviews: 1120, badge: "New", img: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&q=80", category: "Beauty" },
-];
 
 const categories = [
   { name: "Electronics", icon: "⚡", count: "2.4k items", color: "#f59e0b" },
@@ -63,6 +53,8 @@ function ProductCard({ product, index }) {
     }, "Sign in to add items to your cart.");
   };
 
+  const imageSrc = product.images?.[0] || product.img || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80";
+
   return (
     <div
       onClick={() => navigate(`/products/${product.id}`)}
@@ -79,7 +71,7 @@ function ProductCard({ product, index }) {
       onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = "#222"; }}
     >
       <div style={{ position: "relative", overflow: "hidden" }}>
-        <img src={product.img} alt={product.name} style={{ width: "100%", height: 200, objectFit: "cover", display: "block", transition: "transform 0.4s" }}
+        <img src={imageSrc} alt={product.name} style={{ width: "100%", height: 200, objectFit: "cover", display: "block", transition: "transform 0.4s" }}
           onMouseEnter={e => e.target.style.transform = "scale(1.06)"}
           onMouseLeave={e => e.target.style.transform = "scale(1)"}
         />
@@ -121,7 +113,11 @@ export default function HomePage() {
   const navigate = useNavigate()
   const { user, role, logout } = useAuth()
   const { isMobile, isTablet } = useResponsive()
-  const [dropdownOpen, setDropdownOpen] = useState(false)  // ← ADD this
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+
+  const { products, loading, error } = useProducts();
+  const featuredProducts = products.filter(p => p.featured);
+  const featuredToShow = featuredProducts.length ? featuredProducts : products.slice(0, 8);
 
   const [heroIdx, setHeroIdx] = useState(0);
   const { cartCount } = useCart();
@@ -407,7 +403,18 @@ export default function HomePage() {
             View all →
           </span>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : isTablet ? "repeat(3, 1fr)" : "repeat(4, 1fr)", gap: isMobile ? 12 : 20 }}>          {products.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : isTablet ? "repeat(3, 1fr)" : "repeat(4, 1fr)", gap: isMobile ? 12 : 20 }}>
+          {loading ? (
+            Array.from({ length: 4 }).map((_, idx) => (
+              <div key={idx} style={{ minHeight: 360, background: "#111", borderRadius: 16 }} />
+            ))
+          ) : error ? (
+            <div style={{ color: "#f59e0b", fontSize: 14 }}>Unable to load featured products.</div>
+          ) : featuredToShow.length ? (
+            featuredToShow.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)
+          ) : (
+            <div style={{ color: "#9ca3af", fontSize: 14, gridColumn: "1 / -1" }}>No featured products yet. Add featured items from the admin panel.</div>
+          )}
         </div>
       </div>
 

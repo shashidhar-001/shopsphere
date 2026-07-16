@@ -194,7 +194,7 @@ function ProductsTab() {
   const [search, setSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [form, setForm] = useState({ name: "", price: "", category: "", stock: "", badge: "" });
+  const [form, setForm] = useState({ name: "", price: "", originalPrice: "", category: "", stock: "", badge: "", brand: "", description: "", image: "", featured: false });
   const [toast, setToast] = useState(null);
 
   const showToast = (msg, type = "success") => {
@@ -215,13 +215,24 @@ function ProductsTab() {
 
   const handleEdit = (product) => {
     setEditId(product.id);
-    setForm({ name: product.name, price: product.price, category: product.category, stock: product.stock, badge: product.badge });
+    setForm({
+      name: product.name,
+      price: product.price,
+      originalPrice: product.originalPrice || product.price,
+      category: product.category,
+      stock: product.stock,
+      badge: product.badge,
+      brand: product.brand || "",
+      description: product.description || "",
+      image: product.images?.[0] || "",
+      featured: !!product.featured,
+    });
     setShowAdd(true);
   };
 
   const handleSave = async () => {
     if (!form.name || !form.price) return showToast("Please fill required fields", "error");
-    
+
     let result;
     if (editId) {
       result = await updateProduct(editId, form);
@@ -236,7 +247,7 @@ function ProductsTab() {
     if (result.success) {
       setShowAdd(false);
       setEditId(null);
-      setForm({ name: "", price: "", category: "", stock: "", badge: "", originalPrice: "", brand: "", description: "", image: "" });
+      setForm({ name: "", price: "", originalPrice: "", category: "", stock: "", badge: "", brand: "", description: "", image: "", featured: false });
     }
   };
 
@@ -253,7 +264,7 @@ function ProductsTab() {
           <h1 style={{ fontSize: 26, fontWeight: 800, color: "#fff", fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>Products</h1>
           <p style={{ fontSize: 14, color: "#6b7280" }}>{products.length} total products</p>
         </div>
-        <button onClick={() => { setShowAdd(true); setEditId(null); setForm({ name: "", price: "", category: "", stock: "", badge: "" }); }}
+        <button onClick={() => { setShowAdd(true); setEditId(null); setForm({ name: "", price: "", originalPrice: "", category: "", stock: "", badge: "", brand: "", description: "", image: "", featured: false }); }}
           style={{ background: "#f59e0b", color: "#000", border: "none", borderRadius: 12, padding: "11px 20px", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "'Sora', sans-serif", display: "flex", alignItems: "center", gap: 8 }}>
           + Add Product
         </button>
@@ -283,6 +294,18 @@ function ProductsTab() {
                   <input className="admin-input" placeholder={f.placeholder} value={form[f.key]} onChange={e => setForm(d => ({ ...d, [f.key]: e.target.value }))} />
                 </div>
               ))}
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 6 }}>
+                <input
+                  type="checkbox"
+                  id="featured-checkbox"
+                  checked={form.featured}
+                  onChange={e => setForm(d => ({ ...d, featured: e.target.checked }))}
+                  style={{ width: 16, height: 16 }}
+                />
+                <label htmlFor="featured-checkbox" style={{ fontSize: 13, color: "#e5e7eb", fontFamily: "'Sora', sans-serif", cursor: "pointer" }}>
+                  Mark as featured on homepage
+                </label>
+              </div>
             </div>
             <div style={{ display: "flex", gap: 10, marginTop: 24 }}>
               <button onClick={() => { setShowAdd(false); setEditId(null); }}
@@ -311,7 +334,7 @@ function ProductsTab() {
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ background: "#0d0d0d" }}>
-              {["Product", "Category", "Price", "Stock", "Badge", "Actions"].map(h => (
+              {["Product", "Category", "Price", "Stock", "Badge", "Featured", "Actions"].map(h => (
                 <th key={h} style={{ padding: "12px 20px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#6b7280", letterSpacing: 0.8, textTransform: "uppercase" }}>{h}</th>
               ))}
             </tr>
@@ -335,6 +358,9 @@ function ProductsTab() {
                 </td>
                 <td style={{ padding: "14px 20px" }}>
                   <span style={{ background: "#f59e0b22", color: "#f59e0b", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 6 }}>{p.badge}</span>
+                </td>
+                <td style={{ padding: "14px 20px", fontSize: 12, color: p.featured ? "#10b981" : "#6b7280", fontWeight: 700 }}>
+                  {p.featured ? 'Yes' : 'No'}
                 </td>
                 <td style={{ padding: "14px 20px" }}>
                   <div style={{ display: "flex", gap: 8 }}>

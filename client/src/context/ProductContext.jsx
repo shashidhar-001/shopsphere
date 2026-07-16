@@ -13,8 +13,8 @@ const getToken = async () => {
 
 export function ProductProvider({ children }) {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // ── Load products from Supabase on mount ───────────────────────────────────
   useEffect(() => {
@@ -25,27 +25,28 @@ export function ProductProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
-      const res  = await fetch(`${API_URL}/api/products`);
+      const res = await fetch(`${API_URL}/api/products`);
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.error);
 
       // Map backend field names to frontend field names
       const mapped = data.products.map(p => ({
-        id:            p.id,
-        name:          p.name,
-        description:   p.description || "",
-        price:         p.price,
+        id: p.id,
+        name: p.name,
+        description: p.description || "",
+        price: p.price,
         originalPrice: p.original_price || p.price,
-        stock:         p.stock || 0,
-        category:      p.category || "",
-        brand:         p.brand || "",
-        images:        p.images?.length ? p.images : ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80"],
-        badge:         p.badge || "New",
-        rating:        p.rating || 0,
-        reviews:       p.review_count || 0,
-        features:      p.features || [],
-        created_at:    p.created_at,
+        stock: p.stock || 0,
+        category: p.category || "",
+        brand: p.brand || "",
+        images: p.images?.length ? p.images : ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80"],
+        badge: p.badge || "New",
+        rating: p.rating || 0,
+        reviews: p.review_count || 0,
+        features: p.features || [],
+        featured: !!p.featured,
+        created_at: p.created_at,
       }));
 
       setProducts(mapped);
@@ -67,19 +68,20 @@ export function ProductProvider({ children }) {
       const res = await fetch(`${API_URL}/api/products`, {
         method: "POST",
         headers: {
-          "Content-Type":  "application/json",
+          "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
-          name:          form.name,
-          description:   form.description || "",
-          price:         +form.price,
+          name: form.name,
+          description: form.description || "",
+          price: +form.price,
           originalPrice: +(form.originalPrice || form.price),
-          stock:         +(form.stock || 0),
-          category:      form.category || "",
-          brand:         form.brand || "",
-          badge:         form.badge || "New",
-          images:        form.image ? [form.image] : [],
+          stock: +(form.stock || 0),
+          category: form.category || "",
+          brand: form.brand || "",
+          badge: form.badge || "New",
+          images: form.image ? [form.image] : [],
+          featured: !!form.featured,
         }),
       });
 
@@ -88,19 +90,20 @@ export function ProductProvider({ children }) {
 
       // Add to local state immediately
       const newProduct = {
-        id:            data.product.id,
-        name:          data.product.name,
-        description:   data.product.description || "",
-        price:         data.product.price,
+        id: data.product.id,
+        name: data.product.name,
+        description: data.product.description || "",
+        price: data.product.price,
         originalPrice: data.product.original_price || data.product.price,
-        stock:         data.product.stock || 0,
-        category:      data.product.category || "",
-        brand:         data.product.brand || "",
-        images:        data.product.images?.length ? data.product.images : ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80"],
-        badge:         data.product.badge || "New",
-        rating:        0,
-        reviews:       0,
-        features:      [],
+        stock: data.product.stock || 0,
+        category: data.product.category || "",
+        brand: data.product.brand || "",
+        images: data.product.images?.length ? data.product.images : ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80"],
+        badge: data.product.badge || "New",
+        rating: 0,
+        reviews: 0,
+        features: [],
+        featured: !!form.featured,
       };
 
       setProducts(prev => [newProduct, ...prev]);
@@ -119,19 +122,20 @@ export function ProductProvider({ children }) {
       const res = await fetch(`${API_URL}/api/products/${id}`, {
         method: "PUT",
         headers: {
-          "Content-Type":  "application/json",
+          "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
-          name:          form.name,
-          description:   form.description || "",
-          price:         +form.price,
+          name: form.name,
+          description: form.description || "",
+          price: +form.price,
           originalPrice: +(form.originalPrice || form.price),
-          stock:         +(form.stock || 0),
-          category:      form.category || "",
-          brand:         form.brand || "",
-          badge:         form.badge || "New",
-          images:        form.image ? [form.image] : undefined,
+          stock: +(form.stock || 0),
+          category: form.category || "",
+          brand: form.brand || "",
+          badge: form.badge || "New",
+          images: form.image ? [form.image] : undefined,
+          featured: !!form.featured,
         }),
       });
 
@@ -142,15 +146,16 @@ export function ProductProvider({ children }) {
       setProducts(prev => prev.map(p =>
         p.id === id ? {
           ...p,
-          name:          data.product.name,
-          description:   data.product.description || "",
-          price:         data.product.price,
+          name: data.product.name,
+          description: data.product.description || "",
+          price: data.product.price,
           originalPrice: data.product.original_price || data.product.price,
-          stock:         data.product.stock || 0,
-          category:      data.product.category || "",
-          brand:         data.product.brand || "",
-          badge:         data.product.badge || "New",
-          images:        data.product.images?.length ? data.product.images : p.images,
+          stock: data.product.stock || 0,
+          category: data.product.category || "",
+          brand: data.product.brand || "",
+          badge: data.product.badge || "New",
+          images: data.product.images?.length ? data.product.images : p.images,
+          featured: data.product.featured || false,
         } : p
       ));
       return { success: true };

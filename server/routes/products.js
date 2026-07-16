@@ -12,12 +12,12 @@ router.get('/', async (req, res) => {
     let query = supabase.from('products').select('*')
 
     if (category) query = query.eq('category', category)
-    if (search)   query = query.ilike('name', `%${search}%`)
+    if (search) query = query.ilike('name', `%${search}%`)
 
-    if (sort === 'price_low')  query = query.order('price', { ascending: true })
+    if (sort === 'price_low') query = query.order('price', { ascending: true })
     if (sort === 'price_high') query = query.order('price', { ascending: false })
-    if (sort === 'rating')     query = query.order('rating', { ascending: false })
-    else                       query = query.order('created_at', { ascending: false })
+    if (sort === 'rating') query = query.order('rating', { ascending: false })
+    else query = query.order('created_at', { ascending: false })
 
     const { data, error } = await query
     if (error) throw error
@@ -49,27 +49,31 @@ router.get('/:id', async (req, res) => {
 // ── Admin: Add Product ────────────────────────────────────────────────────────
 router.post('/', authenticate, adminGuard, async (req, res) => {
   try {
-    const { name, description, price, originalPrice, stock, category, images, badge, brand } = req.body
+    const { name, description, price, originalPrice, stock, category, images, badge, brand, featured } = req.body
 
     if (!name || !price) {
       return res.status(400).json({ error: 'Name and price are required' })
     }
 
+    const insertPayload = {
+      name,
+      description,
+      price: +price,
+      original_price: +(originalPrice || price),
+      stock: +(stock || 0),
+      category,
+      images: images || [],
+      badge,
+      brand,
+      rating: 0,
+      review_count: 0,
+    }
+
+    if (typeof featured !== 'undefined') insertPayload.featured = !!featured;
+
     const { data, error } = await supabase
       .from('products')
-      .insert({
-        name,
-        description,
-        price:          +price,
-        original_price: +(originalPrice || price),
-        stock:          +(stock || 0),
-        category,
-        images:         images || [],
-        badge,
-        brand,
-        rating:         0,
-        review_count:   0,
-      })
+      .insert(insertPayload)
       .select()
       .single()
 
@@ -84,21 +88,25 @@ router.post('/', authenticate, adminGuard, async (req, res) => {
 // ── Admin: Update Product ─────────────────────────────────────────────────────
 router.put('/:id', authenticate, adminGuard, async (req, res) => {
   try {
-    const { name, description, price, originalPrice, stock, category, images, badge, brand } = req.body
+    const { name, description, price, originalPrice, stock, category, images, badge, brand, featured } = req.body
+
+    const updatePayload = {
+      name,
+      description,
+      price: +price,
+      original_price: +(originalPrice || price),
+      stock: +(stock || 0),
+      category,
+      images,
+      badge,
+      brand,
+    }
+
+    if (typeof featured !== 'undefined') updatePayload.featured = !!featured;
 
     const { data, error } = await supabase
       .from('products')
-      .update({
-        name,
-        description,
-        price:          +price,
-        original_price: +(originalPrice || price),
-        stock:          +(stock || 0),
-        category,
-        images,
-        badge,
-        brand,
-      })
+      .update(updatePayload)
       .eq('id', req.params.id)
       .select()
       .single()
